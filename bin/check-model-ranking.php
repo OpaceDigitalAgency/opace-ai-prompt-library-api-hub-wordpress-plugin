@@ -39,7 +39,7 @@ $openai_sorted = ModelRegistry::sortModelsForDisplay( $openai );
 ai_core_release_check( 'OpenAI GPT-5 ranks first', 'gpt-5' === $openai_sorted[0] );
 
 $supported_text = array(
-	'openai'    => array( 'gpt-5.6-terra', 'gpt-4o-mini', 'o3' ),
+	'openai'    => array( 'gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna', 'gpt-4o-mini', 'o3' ),
 	'anthropic' => array( 'claude-opus-5', 'claude-sonnet-4-6' ),
 	'gemini'    => array( 'gemini-3.7-flash', 'gemini-2.5-pro', 'gemma-4-31b-it' ),
 );

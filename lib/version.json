@@ -1,11 +1,12 @@
 {
-  "version": "1.0.9",
-  "build": "20260823-009",
+  "version": "1.0.10",
+  "build": "20260823-010",
   "compatibility": {
     "php": ">=7.4",
     "wordpress": ">=6.5"
   },
   "changelog": {
+    "1.0.10": "Complete timestamped live provider inventory with selectable and catalogued model groups",
     "1.0.9": "Clickable WordPress.org links and a complete grouped provider and model catalogue",
     "1.0.8": "WordPress.org approval release with corrected compatibility metadata and a Plugins-page review link",
     "1.0.7": "Complete approved page logo, centred white WordPress sidebar symbol and tidy notice layout",

@@ -1,5 +1,11 @@
 # Opace AI Hub changelog
 
+## 1.0.10 — 23 August 2026
+
+- replace the incomplete built-in fallback list with a timestamped snapshot of all 192 models returned by live provider discovery
+- document `gpt-5.6-sol`, `gpt-5.6-terra` and `gpt-5.6-luna` as live, multimodal and selectable
+- distinguish selectable text/image models from live specialist models that the Hub catalogues but does not yet invoke
+
 ## 1.0.9 — 23 August 2026
 
 - make every user-facing URL in the WordPress.org description a labelled, clickable Markdown link

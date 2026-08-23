@@ -7,7 +7,7 @@
 **Configure AI providers once, then share their models, prompts and usage data across compatible WordPress plugins.**
 
 <p align="center">
-  <img alt="Opace AI Hub version 1.0.9" src="https://img.shields.io/badge/version-1.0.9-0A7DBB">
+  <img alt="Opace AI Hub version 1.0.10" src="https://img.shields.io/badge/version-1.0.10-0A7DBB">
   <img alt="Requires WordPress 6.5 or newer" src="https://img.shields.io/badge/WordPress-6.5%2B-21759B">
   <img alt="Tested up to WordPress 7.1" src="https://img.shields.io/badge/tested%20up%20to-WordPress%207.1-21759B">
   <img alt="Requires PHP 7.4 or newer" src="https://img.shields.io/badge/PHP-7.4%2B-777BB4">
@@ -83,48 +83,50 @@ projects are linked in both directions so users can see which plugin supplies ea
 Provider model lists are discovered at runtime. Opace AI Hub does not promise that a particular model will
 be available to every account.
 
-### Current providers and model catalogue
+### Current providers and live model catalogue
 
-**Catalogue snapshot checked: 23 August 2026 at 12:57 BST (UTC+1).**
+**Live catalogue snapshot: 23 August 2026 at 13:03 BST (UTC+1).** The Hub refreshed configured provider
+accounts at that time and received 132 OpenAI, 10 Anthropic Claude and 50 Google Gemini identifiers.
+Provider access varies by account, region and rollout; Settings always uses the current list returned for
+your own key. The built-in registry is only a fallback and metadata source when live discovery is unavailable.
 
-These are the 40 built-in model identifiers recognised by version 1.0.9. Live discovery can add newer
-or account-specific identifiers without a plugin update. Availability depends on the provider, account,
-region and rollout.
+#### Multimodal text models selectable in the Hub
 
-#### Text and reasoning
+These generate text and accept visual input. Image input does not make them dedicated image generators.
 
-- **OpenAI:** `gpt-5-nano`, `o1-preview`, `o1-mini`, `o4-mini`, `gpt-4`, `gpt-3.5-turbo`
-- **Anthropic Claude:** `claude-opus-4-1-20250805`, `claude-opus-4-20250514`, `claude-3-haiku-20240307`
+- **OpenAI (45):** `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`, `gpt-5.5-pro`, `gpt-5.5-pro-2026-04-23`, `gpt-5.5`, `gpt-5.5-2026-04-23`, `gpt-5.4-pro`, `gpt-5.4-pro-2026-03-05`, `gpt-5.4`, `gpt-5.4-2026-03-05`, `gpt-5.4-mini`, `gpt-5.4-mini-2026-03-17`, `gpt-5.4-nano`, `gpt-5.4-nano-2026-03-17`, `gpt-5.2-pro`, `gpt-5.2-pro-2025-12-11`, `gpt-5.2`, `gpt-5.2-2025-12-11`, `gpt-5.1`, `gpt-5.1-2025-11-13`, `gpt-5-pro`, `gpt-5-pro-2025-10-06`, `gpt-5`, `gpt-5-2025-08-07`, `gpt-5-mini-2025-08-07`, `gpt-5-mini`, `gpt-5-nano-2025-08-07`, `gpt-4.1-2025-04-14`, `gpt-4.1`, `gpt-4.1-mini-2025-04-14`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4.1-nano-2025-04-14`, `gpt-4o-2024-05-13`, `gpt-4o-2024-08-06`, `gpt-4o-2024-11-20`, `gpt-4-0613`, `gpt-4o`, `gpt-4-turbo`, `gpt-4-turbo-2024-04-09`, `gpt-4o-mini-2024-07-18`, `gpt-4o-mini`, `o3`, `o3-mini`
+- **Anthropic Claude (7):** `claude-opus-5`, `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-opus-4-5-20251101`, `claude-sonnet-4-5-20250929`
+- **Google Gemini (6):** `gemini-3.6-flash`, `gemini-3.1-pro-preview`, `gemini-3.1-pro-preview-customtools`, `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-pro-latest`
 
-#### Multimodal text
+#### Text and reasoning models selectable in the Hub
 
-These models generate text and can accept visual input. Image input capability does not mean that a
-model is a dedicated image generator.
+- **OpenAI (17):** `gpt-5-nano`, `gpt-4`, `gpt-3.5-turbo-0125`, `gpt-3.5-turbo-1106`, `gpt-3.5-turbo-16k`, `gpt-3.5-turbo`, `o4-mini-2025-04-16`, `o4-mini`, `o3-pro`, `o3-pro-2025-06-10`, `o3-2025-04-16`, `o3-mini-2025-01-31`, `o1-pro`, `o1-pro-2025-03-19`, `o1`, `o1-2024-12-17`, `chat-latest`
+- **Anthropic Claude (3):** `claude-sonnet-5`, `claude-fable-5`, `claude-haiku-4-5-20251001`
+- **Google Gemini (11):** `gemini-3.7-flash`, `gemini-3.5-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite-preview`, `gemini-3.1-flash-lite`, `gemini-3-flash-preview`, `gemini-2.5-flash-lite`, `gemini-flash-latest`, `gemini-flash-lite-latest`, `gemma-4-26b-a4b-it`, `gemma-4-31b-it`
 
-- **OpenAI:** `gpt-5.6-terra`, `gpt-5`, `gpt-5-mini`, `o3`, `o3-mini`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4o`, `gpt-4o-mini`
-- **Anthropic Claude:** `claude-opus-5`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-3-7-sonnet-20250219`, `claude-3-5-haiku-20241022`
-- **Google Gemini:** `gemini-3.6-flash`, `gemini-3.1-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.5-flash-preview-09-2025`, `gemini-2.5-flash-lite`
+#### Image-generation models selectable in the Hub
 
-#### Image generation
+- **OpenAI (6):** `gpt-image-2`, `gpt-image-2-2026-04-21`, `gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`, `chatgpt-image-latest`
+- **Google Gemini (7):** `gemini-3.1-flash-image`, `gemini-3.1-flash-image-preview`, `gemini-3.1-flash-lite-image`, `gemini-3-pro-image`, `gemini-3-pro-image-preview`, `gemini-2.5-flash-image`, `nano-banana-pro-preview`
+- **Anthropic Claude:** no image-generation models were returned.
 
-- **OpenAI:** `gpt-image-2`, `gpt-image-1`, `dall-e-3`, `dall-e-2`
-- **Google Gemini:** `gemini-3-pro-image-preview`, `gemini-3.1-flash-image`, `gemini-2.5-flash-image`, `gemini-2.5-flash-image-preview`, `imagen-3.0-generate-001`, `imagen-3.0-fast-generate-001`
-- **Anthropic Claude:** no image-generation models
+#### Live specialist models catalogued, not currently invoked
 
-#### Embeddings
+The Hub retains these live identifiers for capability-aware add-ons, but its present public helpers only
+execute text, structured-output and image requests. Listing a specialist model here does not claim a
+working Hub request path for that category.
 
-- **OpenAI catalogue:** `text-embedding-3-large`
-
-The embedding identifier is catalogued for capability-aware integrations; the current public generation
-helpers do not execute embedding requests.
-
-#### Audio, speech, realtime, video and specialist models
-
-The Hub retains and classifies additional identifiers returned by live provider discovery, including
-audio, speech, realtime, video, moderation or safety, search, research, code, agent, robotics and
-question-answering categories. These account-dependent models have no fixed built-in identifiers in
-version 1.0.9. They are excluded from prose selectors and are not directly invoked by the current public
-generation helpers.
+- **OpenAI audio, speech and realtime (31):** `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-03-20`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-mini-tts`, `gpt-4o-mini-tts-2025-03-20`, `gpt-4o-mini-tts-2025-12-15`, `gpt-realtime-2.1`, `gpt-realtime-2.1-mini`, `gpt-realtime-2`, `gpt-audio-1.5`, `gpt-realtime-1.5`, `gpt-transcribe`, `gpt-audio`, `gpt-audio-2025-08-28`, `gpt-audio-mini`, `gpt-audio-mini-2025-10-06`, `gpt-audio-mini-2025-12-15`, `gpt-live-transcribe`, `gpt-realtime`, `gpt-realtime-2025-08-28`, `gpt-realtime-mini`, `gpt-realtime-mini-2025-12-15`, `gpt-realtime-translate`, `gpt-realtime-whisper`, `whisper-1`, `tts-1`, `tts-1-1106`, `tts-1-hd`, `tts-1-hd-1106`
+- **Gemini audio, music and live (10):** `gemini-3.5-live-translate-preview`, `gemini-3.1-flash-live-preview`, `gemini-3.1-flash-tts-preview`, `gemini-2.5-pro-preview-tts`, `gemini-2.5-flash-native-audio-latest`, `gemini-2.5-flash-native-audio-preview-09-2025`, `gemini-2.5-flash-native-audio-preview-12-2025`, `gemini-2.5-flash-preview-tts`, `lyria-3-pro-preview`, `lyria-3-clip-preview`
+- **Embeddings (6):** OpenAI `text-embedding-3-small`, `text-embedding-3-large`, `text-embedding-ada-002`; Gemini `gemini-embedding-2-preview`, `gemini-embedding-2`, `gemini-embedding-001`
+- **Video (5):** OpenAI `sora-2-pro`, `sora-2`; Gemini `veo-3.1-fast-generate-preview`, `veo-3.1-generate-preview`, `veo-3.1-lite-generate-preview`
+- **OpenAI code (6):** `gpt-5.3-codex`, `gpt-5.2-codex`, `gpt-5.1-codex-max`, `gpt-5.1-codex`, `gpt-5.1-codex-mini`, `gpt-5-codex`
+- **OpenAI research and search (10):** `o4-mini-deep-research`, `o4-mini-deep-research-2025-06-26`, `o3-deep-research`, `o3-deep-research-2025-06-26`, `gpt-5-search-api`, `gpt-5-search-api-2025-10-14`, `gpt-4o-search-preview`, `gpt-4o-search-preview-2025-03-11`, `gpt-4o-mini-search-preview`, `gpt-4o-mini-search-preview-2025-03-11`
+- **Gemini research (3):** `deep-research-max-preview-04-2026`, `deep-research-preview-04-2026`, `deep-research-pro-preview-12-2025`
+- **Computer-use and agent models (4):** OpenAI `computer-use-preview`, `computer-use-preview-2025-03-11`; Gemini `gemini-2.5-computer-use-preview-10-2025`, `antigravity-preview-05-2026`
+- **Gemini robotics and question answering (4):** `gemini-robotics-er-2-preview`, `gemini-robotics-er-2-streaming-preview`, `gemini-robotics-er-1.6-preview`, `aqa`
+- **OpenAI moderation (2):** `omni-moderation-2024-09-26`, `omni-moderation-latest`
+- **Legacy or provider-specific text IDs excluded from the prose picker (9):** OpenAI `gpt-5.3-chat-latest`, `gpt-5.2-chat-latest`, `gpt-5.1-chat-latest`, `gpt-5-chat-latest`, `gpt-3.5-turbo-instruct`, `gpt-3.5-turbo-instruct-0914`, `babbage-002`, `davinci-002`; Gemini `gemini-omni-flash-preview`
 
 ### Dynamic defaults
 
@@ -261,7 +263,7 @@ promise of availability.
 
 ## Release history
 
-Version 1.0.9 makes the WordPress.org links clickable and documents every built-in model by capability. Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved page logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
+Version 1.0.10 documents the complete timestamped live inventory and distinguishes selectable generation models from catalogued specialist models. Version 1.0.9 makes the WordPress.org links clickable. Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved page logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
 classifies the complete provider catalogue while keeping non-prose products out of
 text-model selectors. Version 1.0.4 retries
 transient provider connection failures once. Version 1.0.3 synchronises every
@@ -277,7 +279,7 @@ bin/build-zip.sh
 ```
 
 The build script checks that the plugin header, `AI_CORE_VERSION` and the WordPress.org stable tag
-match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.9.zip`, makes the installed directory
+match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.10.zip`, makes the installed directory
 slug `opace-ai-prompt-library-api-hub`, and excludes development files and unshipped add-ons.
 
 ## Licence

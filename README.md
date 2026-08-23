@@ -7,7 +7,7 @@
 **Configure AI providers once, then share their models, prompts and usage data across compatible WordPress plugins.**
 
 <p align="center">
-  <img alt="Opace AI Hub version 1.0.8" src="https://img.shields.io/badge/version-1.0.8-0A7DBB">
+  <img alt="Opace AI Hub version 1.0.9" src="https://img.shields.io/badge/version-1.0.9-0A7DBB">
   <img alt="Requires WordPress 6.5 or newer" src="https://img.shields.io/badge/WordPress-6.5%2B-21759B">
   <img alt="Tested up to WordPress 7.1" src="https://img.shields.io/badge/tested%20up%20to-WordPress%207.1-21759B">
   <img alt="Requires PHP 7.4 or newer" src="https://img.shields.io/badge/PHP-7.4%2B-777BB4">
@@ -82,6 +82,49 @@ projects are linked in both directions so users can see which plugin supplies ea
 
 Provider model lists are discovered at runtime. Opace AI Hub does not promise that a particular model will
 be available to every account.
+
+### Current providers and model catalogue
+
+**Catalogue snapshot checked: 23 August 2026 at 12:57 BST (UTC+1).**
+
+These are the 40 built-in model identifiers recognised by version 1.0.9. Live discovery can add newer
+or account-specific identifiers without a plugin update. Availability depends on the provider, account,
+region and rollout.
+
+#### Text and reasoning
+
+- **OpenAI:** `gpt-5-nano`, `o1-preview`, `o1-mini`, `o4-mini`, `gpt-4`, `gpt-3.5-turbo`
+- **Anthropic Claude:** `claude-opus-4-1-20250805`, `claude-opus-4-20250514`, `claude-3-haiku-20240307`
+
+#### Multimodal text
+
+These models generate text and can accept visual input. Image input capability does not mean that a
+model is a dedicated image generator.
+
+- **OpenAI:** `gpt-5.6-terra`, `gpt-5`, `gpt-5-mini`, `o3`, `o3-mini`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4o`, `gpt-4o-mini`
+- **Anthropic Claude:** `claude-opus-5`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-3-7-sonnet-20250219`, `claude-3-5-haiku-20241022`
+- **Google Gemini:** `gemini-3.6-flash`, `gemini-3.1-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.5-flash-preview-09-2025`, `gemini-2.5-flash-lite`
+
+#### Image generation
+
+- **OpenAI:** `gpt-image-2`, `gpt-image-1`, `dall-e-3`, `dall-e-2`
+- **Google Gemini:** `gemini-3-pro-image-preview`, `gemini-3.1-flash-image`, `gemini-2.5-flash-image`, `gemini-2.5-flash-image-preview`, `imagen-3.0-generate-001`, `imagen-3.0-fast-generate-001`
+- **Anthropic Claude:** no image-generation models
+
+#### Embeddings
+
+- **OpenAI catalogue:** `text-embedding-3-large`
+
+The embedding identifier is catalogued for capability-aware integrations; the current public generation
+helpers do not execute embedding requests.
+
+#### Audio, speech, realtime, video and specialist models
+
+The Hub retains and classifies additional identifiers returned by live provider discovery, including
+audio, speech, realtime, video, moderation or safety, search, research, code, agent, robotics and
+question-answering categories. These account-dependent models have no fixed built-in identifiers in
+version 1.0.9. They are excluded from prose selectors and are not directly invoked by the current public
+generation helpers.
 
 ### Dynamic defaults
 
@@ -218,7 +261,7 @@ promise of availability.
 
 ## Release history
 
-Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved page logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
+Version 1.0.9 makes the WordPress.org links clickable and documents every built-in model by capability. Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved page logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
 classifies the complete provider catalogue while keeping non-prose products out of
 text-model selectors. Version 1.0.4 retries
 transient provider connection failures once. Version 1.0.3 synchronises every
@@ -234,7 +277,7 @@ bin/build-zip.sh
 ```
 
 The build script checks that the plugin header, `AI_CORE_VERSION` and the WordPress.org stable tag
-match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.8.zip`, makes the installed directory
+match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.9.zip`, makes the installed directory
 slug `opace-ai-prompt-library-api-hub`, and excludes development files and unshipped add-ons.
 
 ## Licence

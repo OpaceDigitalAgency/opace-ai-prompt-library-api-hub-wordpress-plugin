@@ -4,7 +4,7 @@ Tags: artificial intelligence, openai, claude, gemini, automation
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Manage OpenAI, Anthropic and Gemini credentials once, then share models, prompts
 
 == Description ==
 
-**Compatibility:** Version 1.0.8 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
+**Compatibility:** Version 1.0.9 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
 
 Opace AI Hub is independently developed by Opace Digital Agency and is not affiliated with, endorsed by or sponsored by OpenAI, Anthropic or Google.
 
@@ -36,7 +36,7 @@ AI-Scribe owns article planning, writing, SEO metadata, editorial review and Wor
 Opace AI Hub supplies its encrypted credentials, provider and model selection, normalised generation
 requests, reusable prompts, model capabilities and usage records.
 
-AI-Scribe project: https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator
+[AI-Scribe project](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)
 
 = What Opace AI Hub provides =
 
@@ -56,6 +56,49 @@ AI-Scribe project: https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-cont
 
 Model lists are fetched using your key. Providers may make different models available to different
 accounts, so two sites can show different choices.
+
+= Current providers and model catalogue =
+
+**Catalogue snapshot checked: 23 August 2026 at 12:57 BST (UTC+1).**
+
+The following are the 40 built-in model identifiers recognised by version 1.0.9. Live discovery can
+add newer or account-specific identifiers without a plugin update. Availability depends on the provider,
+account, region and rollout.
+
+**Text and reasoning**
+
+* **OpenAI:** `gpt-5-nano`, `o1-preview`, `o1-mini`, `o4-mini`, `gpt-4`, `gpt-3.5-turbo`
+* **Anthropic Claude:** `claude-opus-4-1-20250805`, `claude-opus-4-20250514`, `claude-3-haiku-20240307`
+
+**Multimodal text**
+
+These models generate text and can accept visual input. Image input capability does not mean that a
+model is a dedicated image generator.
+
+* **OpenAI:** `gpt-5.6-terra`, `gpt-5`, `gpt-5-mini`, `o3`, `o3-mini`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4o`, `gpt-4o-mini`
+* **Anthropic Claude:** `claude-opus-5`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-20250514`, `claude-3-7-sonnet-20250219`, `claude-3-5-haiku-20241022`
+* **Google Gemini:** `gemini-3.6-flash`, `gemini-3.1-pro-preview`, `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.5-flash-preview-09-2025`, `gemini-2.5-flash-lite`
+
+**Image generation**
+
+* **OpenAI:** `gpt-image-2`, `gpt-image-1`, `dall-e-3`, `dall-e-2`
+* **Google Gemini:** `gemini-3-pro-image-preview`, `gemini-3.1-flash-image`, `gemini-2.5-flash-image`, `gemini-2.5-flash-image-preview`, `imagen-3.0-generate-001`, `imagen-3.0-fast-generate-001`
+* **Anthropic Claude:** no image-generation models
+
+**Embeddings**
+
+* **OpenAI catalogue:** `text-embedding-3-large`
+
+The embedding identifier is catalogued for capability-aware integrations; the current public generation
+helpers do not execute embedding requests.
+
+**Audio, speech, realtime, video and specialist models**
+
+The Hub retains and classifies additional identifiers returned by live provider discovery, including
+audio, speech, realtime, video, moderation or safety, search, research, code, agent, robotics and
+question-answering categories. These account-dependent models have no fixed built-in identifiers in
+version 1.0.9. They are excluded from prose selectors and are not directly invoked by the current public
+generation helpers.
 
 = Dynamic model defaults =
 
@@ -96,40 +139,40 @@ terms of your account.
 
 Used when an administrator tests an OpenAI key or refreshes its model list, and when OpenAI is chosen
 for a generation. Opace AI Hub sends the OpenAI API key, requested model, request settings and prompt or
-image instructions supplied by the calling plugin. Requests go to `api.openai.com`.
+image instructions supplied by the calling plugin. Requests go to [api.openai.com](https://api.openai.com/).
 
-Terms: https://openai.com/policies/terms-of-use
-Privacy: https://openai.com/policies/privacy-policy
+[OpenAI Terms of Use](https://openai.com/policies/terms-of-use)
+[OpenAI Privacy Policy](https://openai.com/policies/privacy-policy)
 
 **Anthropic Claude**
 
 Used when an administrator tests an Anthropic key or refreshes its model list, and when Anthropic is
 chosen for a generation. Opace AI Hub sends the Anthropic API key, requested model, request settings and
-prompt supplied by the calling plugin. Requests go to `api.anthropic.com`.
+prompt supplied by the calling plugin. Requests go to [api.anthropic.com](https://api.anthropic.com/).
 
-Terms: https://www.anthropic.com/legal/consumer-terms
-Privacy: https://www.anthropic.com/legal/privacy
+[Anthropic Consumer Terms](https://www.anthropic.com/legal/consumer-terms)
+[Anthropic Privacy Policy](https://www.anthropic.com/legal/privacy)
 
 **Google Gemini**
 
 Used when an administrator tests a Gemini key or refreshes its model list, and when Gemini is chosen
 for a generation. Opace AI Hub sends the Gemini API key, requested model, request settings and prompt or
 image instructions supplied by the calling plugin. Requests go to
-`generativelanguage.googleapis.com`.
+[generativelanguage.googleapis.com](https://generativelanguage.googleapis.com/).
 
-Terms: https://ai.google.dev/gemini-api/terms
-Privacy: https://policies.google.com/privacy
+[Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms)
+[Google Privacy Policy](https://policies.google.com/privacy)
 
 **LiteLLM public model catalogue**
 
 Used when Opace AI Hub needs current published pricing for a discovered model and when an administrator
 selects Refresh Model Pricing. Opace AI Hub sends only the provider name and model identifier to
-`api.litellm.ai`. API keys, prompts, generated content, site details and usage totals are not sent.
+[api.litellm.ai](https://api.litellm.ai/). API keys, prompts, generated content, site details and usage totals are not sent.
 Successful results are cached for 12 hours. Opace AI Hub uses its bundled catalogue when no current result
 is available and shows Cost unavailable rather than treating an unknown price as zero.
 
-Catalogue and licence: https://github.com/BerriAI/litellm
-Privacy and data security: https://docs.litellm.ai/docs/data_security
+[LiteLLM catalogue and licence](https://github.com/BerriAI/litellm)
+[LiteLLM privacy and data security](https://docs.litellm.ai/docs/data_security)
 
 Cost figures shown by Opace AI Hub are published-rate estimates. Free tiers, cached-token rates, batch
 pricing, negotiated rates and provider billing changes can make an invoice differ from the estimate.
@@ -195,14 +238,20 @@ before deleting the plugin. Opace AI Hub does not delete another plugin's data.
 
 == Opace and related links ==
 
-* AI-Scribe: https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator
-* Opace AI Hub source and full changelog: https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin
-* Opace Digital Agency: https://opace.agency/
-* Web design and development: https://opace.agency/services/web-design/
-* WordPress development: https://opace.agency/services/web-design/wordpress-development/
-* AI SEO services: https://opace.agency/services/ai-seo/
+* [AI-Scribe](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)
+* [Opace AI Hub source and full changelog](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)
+* [Opace Digital Agency](https://opace.agency/)
+* [Web design and development](https://opace.agency/services/web-design/)
+* [WordPress development](https://opace.agency/services/web-design/wordpress-development/)
+* [AI SEO services](https://opace.agency/services/ai-seo/)
 
 == Changelog ==
+
+= 1.0.9 =
+
+* Made every user-facing URL in the WordPress.org description a labelled, clickable Markdown link.
+* Documented all 40 built-in model identifiers, grouped by text, multimodal, image and embedding roles.
+* Distinguished models the Hub can invoke from specialist models retained through live provider discovery.
 
 = 1.0.8 =
 
@@ -261,6 +310,10 @@ before deleting the plugin. Opace AI Hub does not delete another plugin's data.
 * Consolidated all completed pre-release work as the first public 1.0 release.
 
 == Upgrade Notice ==
+
+= 1.0.9 =
+
+Adds clickable directory links and a complete, capability-grouped provider and model catalogue.
 
 = 1.0.8 =
 

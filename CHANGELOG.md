@@ -1,5 +1,11 @@
 # Opace AI Hub changelog
 
+## 1.0.9 — 23 August 2026
+
+- make every user-facing URL in the WordPress.org description a labelled, clickable Markdown link
+- document all 40 built-in model identifiers, grouped by text, multimodal, image and embedding roles
+- distinguish models the Hub can invoke from specialist models retained through live provider discovery
+
 ## 1.0.8 — 23 August 2026
 
 - remove the unsupported `Tested up to` field from the main PHP plugin header following final WordPress.org review guidance

@@ -1,11 +1,12 @@
 {
-  "version": "1.0.8",
-  "build": "20260823-008",
+  "version": "1.0.9",
+  "build": "20260823-009",
   "compatibility": {
     "php": ">=7.4",
     "wordpress": ">=6.5"
   },
   "changelog": {
+    "1.0.9": "Clickable WordPress.org links and a complete grouped provider and model catalogue",
     "1.0.8": "WordPress.org approval release with corrected compatibility metadata and a Plugins-page review link",
     "1.0.7": "Complete approved page logo, centred white WordPress sidebar symbol and tidy notice layout",
     "1.0.6": "Approved runtime branding with small favicon and WordPress admin-menu variants"

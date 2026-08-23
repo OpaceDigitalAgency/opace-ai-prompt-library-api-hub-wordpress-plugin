@@ -7,7 +7,7 @@
 **Configure AI providers once, then share their models, prompts and usage data across compatible WordPress plugins.**
 
 <p align="center">
-  <img alt="Opace AI Hub version 1.0.7" src="https://img.shields.io/badge/version-1.0.7-0A7DBB">
+  <img alt="Opace AI Hub version 1.0.8" src="https://img.shields.io/badge/version-1.0.8-0A7DBB">
   <img alt="Requires WordPress 6.5 or newer" src="https://img.shields.io/badge/WordPress-6.5%2B-21759B">
   <img alt="Tested up to WordPress 7.1" src="https://img.shields.io/badge/tested%20up%20to-WordPress%207.1-21759B">
   <img alt="Requires PHP 7.4 or newer" src="https://img.shields.io/badge/PHP-7.4%2B-777BB4">
@@ -218,7 +218,7 @@ promise of availability.
 
 ## Release history
 
-Version 1.0.7 uses the complete approved page logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
+Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved page logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
 classifies the complete provider catalogue while keeping non-prose products out of
 text-model selectors. Version 1.0.4 retries
 transient provider connection failures once. Version 1.0.3 synchronises every
@@ -234,7 +234,7 @@ bin/build-zip.sh
 ```
 
 The build script checks that the plugin header, `AI_CORE_VERSION` and the WordPress.org stable tag
-match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.7.zip`, makes the installed directory
+match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.8.zip`, makes the installed directory
 slug `opace-ai-prompt-library-api-hub`, and excludes development files and unshipped add-ons.
 
 ## Licence

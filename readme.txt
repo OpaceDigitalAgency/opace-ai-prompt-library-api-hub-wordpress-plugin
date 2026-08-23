@@ -4,7 +4,7 @@ Tags: artificial intelligence, openai, claude, gemini, automation
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Manage OpenAI, Anthropic and Gemini credentials once, then share models, prompts
 
 == Description ==
 
-**Compatibility:** Version 1.0.7 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
+**Compatibility:** Version 1.0.8 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
 
 Opace AI Hub is independently developed by Opace Digital Agency and is not affiliated with, endorsed by or sponsored by OpenAI, Anthropic or Google.
 
@@ -204,6 +204,12 @@ before deleting the plugin. Opace AI Hub does not delete another plugin's data.
 
 == Changelog ==
 
+= 1.0.8 =
+
+* Removed the unsupported `Tested up to` field from the main PHP plugin header following final WordPress.org review guidance; compatibility remains declared in readme.txt.
+* Prepared the approved permanent slug and listing assets for the first WordPress.org SVN release.
+* Added a Leave a Review link to the plugin row on the main Plugins page, matching AI-Scribe.
+
 = 1.0.7 =
 
 * Changed plugin page headings to the complete approved Opace AI Hub logo and the WordPress sidebar to a centred white 20px symbol.
@@ -255,6 +261,10 @@ before deleting the plugin. Opace AI Hub does not delete another plugin's data.
 * Consolidated all completed pre-release work as the first public 1.0 release.
 
 == Upgrade Notice ==
+
+= 1.0.8 =
+
+Final WordPress.org approval release with corrected compatibility metadata and a direct review link on the Plugins page.
 
 = 1.0.7 =
 

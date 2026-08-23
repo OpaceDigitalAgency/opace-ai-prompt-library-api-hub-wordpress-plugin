@@ -1,5 +1,12 @@
 # Opace AI Hub changelog
 
+## 1.0.8 — 23 August 2026
+
+- remove the unsupported `Tested up to` field from the main PHP plugin header following final WordPress.org review guidance
+- retain WordPress 7.1 compatibility in the supported WordPress.org `readme.txt` field
+- prepare the approved `opace-ai-prompt-library-api-hub` slug and listing assets for the first SVN publication
+- add a Leave a Review link to the plugin row on the main Plugins page, matching AI-Scribe
+
 ## 1.0.7 — 20 August 2026
 
 - use the complete approved Opace AI Hub logo on plugin admin pages

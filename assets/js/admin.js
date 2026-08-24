@@ -1167,64 +1167,51 @@
         },
 
         bindEvents: function() {
-            $(document).on('click', '.ai-core-activate-addon', this.activateAddon.bind(this));
+            $(document).on('click', '.ai-core-addon-action', this.runAddonAction.bind(this));
         },
 
-        activateAddon: function(e) {
+        runAddonAction: function(e) {
             e.preventDefault();
 
             const $btn = $(e.currentTarget);
-            const pluginFile = $btn.data('plugin-file');
+            const slug = $btn.data('slug');
+            const requestedAction = $btn.data('action');
+            const $status = $btn.siblings('.addon-action-status');
 
-            if (!pluginFile) {
-                alert(translated('invalidPluginFile', 'Invalid plugin file.'));
+            if (!slug || (requestedAction !== 'install' && requestedAction !== 'activate')) {
+                $status.text(translated('invalidAddonAction', 'Invalid add-on action.'));
                 return;
             }
 
-            // Disable button and show loading
             $btn.prop('disabled', true);
             const originalHtml = $btn.html();
-            $btn.html('<span class="dashicons dashicons-update spin"></span> ' + translated('activating', 'Activating...'));
+            const progressText = requestedAction === 'install'
+                ? translated('installingAddon', 'Installing and activating...')
+                : translated('activating', 'Activating...');
+            $btn.html('<span class="dashicons dashicons-update spin"></span> ' + progressText);
+            $status.removeClass('is-error is-success').text(progressText);
 
-            // Send AJAX request
             $.ajax({
                 url: aiCoreAdmin.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'ai_core_activate_addon',
+                    action: requestedAction === 'install' ? 'ai_core_install_addon' : 'ai_core_activate_addon',
                     nonce: aiCoreAdmin.nonce,
-                    plugin_file: pluginFile
+                    slug: slug
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Show success message
-                        $btn.html('<span class="dashicons dashicons-yes-alt"></span> ' + translated('active', 'Active'));
-                        $btn.removeClass('button-primary ai-core-activate-addon')
-                            .addClass('button-disabled');
-
-                        // Show notification
-                        if (typeof wp !== 'undefined' && wp.data && wp.data.dispatch) {
-                            wp.data.dispatch('core/notices').createNotice(
-                                'success',
-                                response.data.message,
-                                { isDismissible: true }
-                            );
-                        } else {
-                            alert(response.data.message);
-                        }
-
-                        // Reload page after 1 second to show new menu items
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
+                        $status.addClass('is-success').text(response.data.message || translated('addonReady', 'Add-on ready.'));
+                        window.location.assign(response.data.redirect || window.location.href);
                     } else {
                         $btn.html(originalHtml).prop('disabled', false);
-                        alert(response.data.message || translated('activationFailed', 'Activation failed.'));
+                        $status.addClass('is-error').text(response.data.message || translated('addonActionFailed', 'The add-on action failed.'));
                     }
                 },
                 error: function(xhr, status, error) {
                     $btn.html(originalHtml).prop('disabled', false);
-                    alert(translatedFormat('activationFailedDetail', 'Activation failed: %s', error));
+                    const responseMessage = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message;
+                    $status.addClass('is-error').text(responseMessage || translatedFormat('addonActionFailedDetail', 'The add-on action failed: %s', error));
                 }
             });
         }

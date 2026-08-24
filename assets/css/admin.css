@@ -954,6 +954,26 @@ body[class*="ai-core"] #wpfooter a {
     height: 16px;
 }
 
+.addon-action-status {
+    min-height: 1.4em;
+    margin: var(--ai-core-space-2) 0 0;
+    color: var(--ai-core-text-subtle);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.addon-action-status:empty {
+    display: none;
+}
+
+.addon-action-status.is-success {
+    color: var(--ai-core-success);
+}
+
+.addon-action-status.is-error {
+    color: var(--ai-core-danger);
+}
+
 /* Add-ons info */
 .ai-core-addons-info {
     margin-top: var(--ai-core-space-8);

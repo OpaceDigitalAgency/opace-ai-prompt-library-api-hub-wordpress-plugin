@@ -1,5 +1,12 @@
 # Opace AI Hub changelog
 
+## 1.0.12 — 24 August 2026
+
+- install and activate AI-Scribe from its WordPress.org package after one explicit administrator action
+- activate an installed copy or open an active copy from the same state-aware Add-ons card
+- report progress and failures in context instead of browser alerts or unrelated admin notices
+- align Dashicons consistently in Add-ons, Settings and Prompt Library buttons
+
 ## 1.0.11 — 23 August 2026
 
 - integrate WordPress 7.0 AI Client providers and Connector-managed credentials without copying secrets between stores

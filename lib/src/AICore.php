@@ -14,7 +14,7 @@
  * Client as an additional backend is on the roadmap.
  *
  * @package AI_Core
- * @version 1.0.11
+ * @version 1.0.12
  */
 
 namespace AICore;
@@ -32,7 +32,7 @@ class AICore {
     /**
      * Library version
      */
-    const VERSION = '1.0.11';
+    const VERSION = '1.0.12';
     
     /**
      * Provider instances cache

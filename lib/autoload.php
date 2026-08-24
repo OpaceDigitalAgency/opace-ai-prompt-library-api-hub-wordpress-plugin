@@ -6,7 +6,7 @@
  * Allows AI-Scribe to use Opace AI Hub without Composer
  * 
  * @package AI_Core
- * @version 1.0.11
+ * @version 1.0.12
  */
 
 // Prevent direct access
@@ -55,7 +55,7 @@ spl_autoload_register('ai_core_autoloader');
 
 // Define Opace AI Hub constants
 if (!defined('AI_CORE_VERSION')) {
-    define('AI_CORE_VERSION', '1.0.11');
+    define('AI_CORE_VERSION', '1.0.12');
 }
 
 if (!defined('AI_CORE_PATH')) {

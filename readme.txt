@@ -4,7 +4,7 @@ Tags: artificial intelligence, openai, claude, gemini, automation
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.11
+Stable tag: 1.0.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Manage OpenAI, Anthropic and Gemini credentials once, then share models, prompts
 
 == Description ==
 
-**Compatibility:** Version 1.0.11 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
+**Compatibility:** Version 1.0.12 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
 
 Opace AI Hub is independently developed by Opace Digital Agency and is not affiliated with, endorsed by or sponsored by OpenAI, Anthropic or Google.
 
@@ -110,7 +110,7 @@ The maintained offline fallbacks are currently `gpt-5.6-terra`, `claude-opus-5`,
 
 = Compatible plugins =
 
-* **AI-Scribe 3.0 or later** - AI content creation and SEO optimisation
+* **AI-Scribe 3.0 or later** - AI content creation and SEO optimisation. From Hub 1.0.12, the Add-ons screen can install and activate the public AI-Scribe package after one explicit administrator action.
 
 Developers can also use Opace AI Hub's PHP API in their own plugins.
 
@@ -175,6 +175,12 @@ is available and shows Cost unavailable rather than treating an unknown price as
 
 [LiteLLM catalogue and licence](https://github.com/BerriAI/litellm)
 [LiteLLM privacy and data security](https://docs.litellm.ai/docs/data_security)
+
+**WordPress.org plugin directory**
+
+Used only when an administrator chooses **Install and activate AI-Scribe** on the Add-ons screen. Opace AI Hub asks the WordPress plugin API for AI-Scribe's public package and passes its download URL to WordPress's core installer. WordPress.org receives the normal plugin-information and package-download requests; Opace AI Hub does not send API keys, prompts, generated content, site settings or usage records.
+
+[AI-Scribe on WordPress.org](https://wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)
 
 Cost figures shown by Opace AI Hub are published-rate estimates. Free tiers, cached-token rates, batch
 pricing, negotiated rates and provider billing changes can make an invoice differ from the estimate.
@@ -257,6 +263,13 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 
 == Changelog ==
 
+= 1.0.12 =
+
+* Added one consent-led action that installs and activates AI-Scribe from WordPress.org.
+* Added state-aware Activate and Open AI-Scribe actions for existing installations.
+* Kept installation progress and errors inside the AI-Scribe add-on card.
+* Corrected Dashicon alignment across Add-ons, Settings and Prompt Library buttons.
+
 = 1.0.11 =
 
 * Added two-way runtime credential sharing with the WordPress 7.0 AI Client and Connectors APIs.
@@ -335,6 +348,10 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 * Consolidated all completed pre-release work as the first public 1.0 release.
 
 == Upgrade Notice ==
+
+= 1.0.12 =
+
+Install and activate AI-Scribe directly from the Hub Add-ons screen with one explicit action.
 
 = 1.0.11 =
 

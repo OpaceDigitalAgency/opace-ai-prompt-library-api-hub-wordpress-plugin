@@ -246,60 +246,27 @@ trait AI_Core_Prompt_Library_AJAX {
         // Get settings to check if API keys are configured
         $settings = get_option('ai_core_settings', array());
 
-        // Check if any API key is configured
-        $has_key = !empty($settings['openai_api_key']) ||
-                   !empty($settings['anthropic_api_key']) ||
-                   !empty($settings['gemini_api_key']);
-
-        if (!$has_key) {
-            wp_send_json_error(array('message' => __('Opace AI Hub is not configured. Please add at least one API key in Settings.', 'opace-ai-prompt-library-api-hub')));
+        $api = AI_Core_API::get_instance();
+        $configured_providers = $api->get_configured_providers();
+        if (empty($configured_providers)) {
+            wp_send_json_error(array('message' => __('No provider is configured in Opace AI Hub or WordPress Connectors.', 'opace-ai-prompt-library-api-hub')));
         }
 
-        // If no provider specified or default, determine from available keys
+        // If no provider was specified, use the saved default when available.
         if (empty($provider) || $provider === 'default') {
-            if (!empty($settings['openai_api_key'])) {
-                $provider = 'openai';
-            } elseif (!empty($settings['anthropic_api_key'])) {
-                $provider = 'anthropic';
-            } elseif (!empty($settings['gemini_api_key'])) {
-                $provider = 'gemini';
-            }
+            $saved_default = $settings['default_provider'] ?? '';
+            $provider = in_array($saved_default, $configured_providers, true)
+                ? $saved_default
+                : $configured_providers[0];
         }
 
-        // Validate provider has a key
-        $provider_key_map = array(
-            'openai' => 'openai_api_key',
-            'anthropic' => 'anthropic_api_key',
-            'gemini' => 'gemini_api_key',
-        );
-
-        if (isset($provider_key_map[$provider]) && empty($settings[$provider_key_map[$provider]])) {
+        if (!in_array($provider, $configured_providers, true)) {
             /* translators: %s: provider name, e.g. OpenAI. */
-            wp_send_json_error(array('message' => sprintf(__('API key for %s is not configured. Please add it in Settings.', 'opace-ai-prompt-library-api-hub'), ucfirst($provider))));
-        }
-
-        // Initialize Opace AI Hub with current settings
-        if (class_exists('AICore\\AICore')) {
-            $config = array();
-
-            if (!empty($settings['openai_api_key'])) {
-                $config['openai_api_key'] = $settings['openai_api_key'];
-            }
-            if (!empty($settings['anthropic_api_key'])) {
-                $config['anthropic_api_key'] = $settings['anthropic_api_key'];
-            }
-            if (!empty($settings['gemini_api_key'])) {
-                $config['gemini_api_key'] = $settings['gemini_api_key'];
-            }
-            \AICore\AICore::init($config);
-        } else {
-            wp_send_json_error(array('message' => __('Opace AI Hub library not found.', 'opace-ai-prompt-library-api-hub')));
+            wp_send_json_error(array('message' => sprintf(__('%s is not configured in Opace AI Hub or WordPress Connectors.', 'opace-ai-prompt-library-api-hub'), ucfirst($provider))));
         }
 
         try {
             // Use AI_Core_API to ensure statistics tracking
-            $api = AI_Core_API::get_instance();
-
             $usage_context = array('tool' => 'prompt_library');
 
             if ($type === 'image') {
@@ -311,7 +278,12 @@ trait AI_Core_Prompt_Library_AJAX {
                     wp_send_json_error(array('message' => $result->get_error_message()));
                 }
 
-                $image_url = $result['url'] ?? $result['data'][0]['url'] ?? '';
+                $image_item = $result['data'][0] ?? array();
+                $image_url = $result['url'] ?? $image_item['url'] ?? '';
+                if ('' === $image_url && !empty($image_item['b64_json'])) {
+                    $mime_type = !empty($image_item['mime_type']) ? (string) $image_item['mime_type'] : 'image/png';
+                    $image_url = 'data:' . $mime_type . ';base64,' . $image_item['b64_json'];
+                }
 
                 wp_send_json_success(array(
                     'result' => $image_url,
@@ -380,11 +352,11 @@ trait AI_Core_Prompt_Library_AJAX {
             wp_send_json_error(array('message' => __('Permission denied', 'opace-ai-prompt-library-api-hub')));
         }
 
-        $settings = get_option('ai_core_settings', array());
+        $configured = AI_Core_API::get_instance()->get_configured_providers();
         $capabilities = array();
 
         // Check OpenAI
-        if (!empty($settings['openai_api_key'])) {
+        if (in_array('openai', $configured, true)) {
             $capabilities['openai'] = array(
                 'text' => true,
                 'image' => true,
@@ -393,7 +365,7 @@ trait AI_Core_Prompt_Library_AJAX {
         }
 
         // Check Gemini
-        if (!empty($settings['gemini_api_key'])) {
+        if (in_array('gemini', $configured, true)) {
             $capabilities['gemini'] = array(
                 'text' => true,
                 'image' => true,
@@ -402,7 +374,7 @@ trait AI_Core_Prompt_Library_AJAX {
         }
 
         // Check Anthropic (text only)
-        if (!empty($settings['anthropic_api_key'])) {
+        if (in_array('anthropic', $configured, true)) {
             $capabilities['anthropic'] = array(
                 'text' => true,
                 'image' => false,

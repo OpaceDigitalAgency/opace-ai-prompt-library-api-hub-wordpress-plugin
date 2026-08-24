@@ -94,7 +94,13 @@ class AI_Core_Prompt_Library {
         } catch (Exception $e) {
             echo '<div class="wrap">';
             AI_Core_Admin::render_page_brand(__('Prompt Library', 'opace-ai-prompt-library-api-hub'));
-            echo '<div class="notice notice-error"><p>Error loading Prompt Library: ' . esc_html($e->getMessage()) . '</p></div>';
+            echo '<div class="notice notice-error"><p>';
+            printf(
+                /* translators: %s: error detail. */
+                esc_html__('Error loading Prompt Library: %s', 'opace-ai-prompt-library-api-hub'),
+                esc_html($e->getMessage())
+            );
+            echo '</p></div>';
             echo '</div>';
             return;
         }

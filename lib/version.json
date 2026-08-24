@@ -1,11 +1,12 @@
 {
-  "version": "1.0.10",
-  "build": "20260823-010",
+  "version": "1.0.11",
+  "build": "20260823-011",
   "compatibility": {
     "php": ">=7.4",
     "wordpress": ">=6.5"
   },
   "changelog": {
+    "1.0.11": "Two-way runtime integration with WordPress AI Client providers and Connector-managed credentials",
     "1.0.10": "Complete timestamped live provider inventory with selectable and catalogued model groups",
     "1.0.9": "Clickable WordPress.org links and a complete grouped provider and model catalogue",
     "1.0.8": "WordPress.org approval release with corrected compatibility metadata and a Plugins-page review link",

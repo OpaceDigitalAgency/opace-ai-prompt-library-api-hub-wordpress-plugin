@@ -49,14 +49,10 @@ class AI_Core_API {
     /**
      * Check if Opace AI Hub is configured
      * 
-     * @return bool True if at least one API key is configured
+     * @return bool True if at least one Hub or WordPress AI provider is configured
      */
     public function is_configured() {
-        $settings = get_option('ai_core_settings', array());
-        
-        return !empty($settings['openai_api_key']) ||
-               !empty($settings['anthropic_api_key']) ||
-               !empty($settings['gemini_api_key']);
+        return !empty($this->get_configured_providers());
     }
     
     /**
@@ -77,7 +73,42 @@ class AI_Core_API {
         if (!empty($settings['gemini_api_key'])) {
             $providers[] = 'gemini';
         }
-        return $providers;
+
+        if (class_exists('AI_Core_WordPress_AI_Client')) {
+            foreach (AI_Core_WordPress_AI_Client::get_provider_status() as $provider => $status) {
+                if (!empty($status['configured'])) {
+                    $providers[] = $provider;
+                }
+            }
+        }
+
+        return array_values(array_unique($providers));
+    }
+
+    /**
+     * Credential/runtime source for one provider.
+     *
+     * @param string $provider Provider name.
+     * @return string wordpress|wordpress_and_ai_core|ai_core|ai_core_direct|none
+     */
+    public function get_provider_source($provider) {
+        if (class_exists('AI_Core_WordPress_AI_Client')) {
+            return AI_Core_WordPress_AI_Client::get_provider_source($provider);
+        }
+
+        $settings = get_option('ai_core_settings', array());
+        return !empty($settings[$provider . '_api_key']) ? 'ai_core_direct' : 'none';
+    }
+
+    /**
+     * WordPress AI Client registration/configuration status by provider.
+     *
+     * @return array<string,array<string,mixed>>
+     */
+    public function get_wordpress_ai_provider_status() {
+        return class_exists('AI_Core_WordPress_AI_Client')
+            ? AI_Core_WordPress_AI_Client::get_provider_status()
+            : array();
     }
     
     /**
@@ -110,8 +141,33 @@ class AI_Core_API {
      * @return array List of available models
      */
     public function get_available_models($provider) {
-        $validator = AI_Core_Validator::get_instance();
-        return $validator->get_available_models($provider);
+        $settings = get_option('ai_core_settings', array());
+        $has_hub_key = !empty($settings[$provider . '_api_key']);
+        $source = $this->get_provider_source($provider);
+        $models = array();
+
+        // A WordPress Connector is authoritative when present, so its model
+        // directory is the selectable contract rather than a second account's
+        // direct list.
+        if (class_exists('AI_Core_WordPress_AI_Client')
+            && in_array($source, array('wordpress', 'wordpress_and_ai_core', 'ai_core'), true)) {
+            $models = AI_Core_WordPress_AI_Client::get_available_models($provider);
+        }
+
+        // Hub-only installations retain direct discovery. With a registered
+        // core provider, use its directory once; fall back to the direct list
+        // only when that provider returns no models.
+        if ($has_hub_key
+            && !in_array($source, array('wordpress', 'wordpress_and_ai_core'), true)
+            && ('ai_core_direct' === $source || empty($models))) {
+            $direct_models = AI_Core_Validator::get_instance()->get_available_models($provider);
+            $models = array_merge($models, $direct_models);
+        }
+
+        $models = array_values(array_unique(array_filter($models, 'is_string')));
+        return class_exists('AICore\\Registry\\ModelRegistry')
+            ? \AICore\Registry\ModelRegistry::sortModelsForDisplay($models)
+            : $models;
     }
 
     /**
@@ -225,10 +281,23 @@ class AI_Core_API {
      */
     public function send_text_request($model, $messages, $options = array(), $usage_context = array()) {
         if (!$this->is_configured()) {
-            return new WP_Error('not_configured', __('Opace AI Hub is not configured. Please add at least one API key.', 'opace-ai-prompt-library-api-hub'));
+            return new WP_Error('not_configured', __('No AI provider is configured in Opace AI Hub or WordPress Connectors.', 'opace-ai-prompt-library-api-hub'));
         }
-        
+
         try {
+            $provider = $this->provider_for_model($model);
+            if ($provider && $this->should_use_wordpress_ai_client($provider, $model)) {
+                $response = AI_Core_WordPress_AI_Client::send_text_request($model, $messages, $options, $provider);
+                if (is_wp_error($response)) {
+                    $this->track_usage($model, array('error' => $response->get_error_message()), $usage_context);
+                    return $response;
+                }
+
+                $used_model = !empty($response['model']) ? (string) $response['model'] : $model;
+                $this->track_usage($used_model, $response, $usage_context);
+                return $response;
+            }
+
             if (!class_exists('AICore\\AICore')) {
                 return new WP_Error('library_missing', __('Opace AI Hub library not found.', 'opace-ai-prompt-library-api-hub'));
             }
@@ -258,10 +327,24 @@ class AI_Core_API {
      */
     public function generate_image($prompt, $options = array(), $provider = 'openai', $usage_context = array()) {
         if (!$this->is_configured()) {
-            return new WP_Error('not_configured', __('Opace AI Hub is not configured. Please add at least one API key.', 'opace-ai-prompt-library-api-hub'));
+            return new WP_Error('not_configured', __('No AI provider is configured in Opace AI Hub or WordPress Connectors.', 'opace-ai-prompt-library-api-hub'));
         }
 
         try {
+            $requested_model = isset($options['model']) ? (string) $options['model'] : '';
+            if ($this->should_use_wordpress_ai_client($provider, $requested_model)) {
+                $response = AI_Core_WordPress_AI_Client::generate_image($prompt, $options, $provider);
+                if (is_wp_error($response)) {
+                    $model = $requested_model ?: 'image-' . $provider;
+                    $this->track_usage($model, array('error' => $response->get_error_message()), $usage_context);
+                    return $response;
+                }
+
+                $model = !empty($response['model']) ? (string) $response['model'] : ($requested_model ?: 'image-' . $provider);
+                $this->track_usage($model, $response, $usage_context);
+                return $response;
+            }
+
             if (!class_exists('AICore\\AICore')) {
                 return new WP_Error('library_missing', __('Opace AI Hub library not found.', 'opace-ai-prompt-library-api-hub'));
             }
@@ -280,6 +363,56 @@ class AI_Core_API {
             $this->track_usage($model, array('error' => $e->getMessage()), $usage_context);
             return new WP_Error('request_failed', $e->getMessage());
         }
+    }
+
+    /**
+     * Resolve a model to the provider advertised by either registry.
+     *
+     * @param string $model Model id.
+     * @return string
+     */
+    private function provider_for_model($model) {
+        if (class_exists('AICore\\Registry\\ModelRegistry')) {
+            $provider = \AICore\Registry\ModelRegistry::getProvider((string) $model);
+            if ($provider) {
+                return $provider;
+            }
+        }
+
+        if (class_exists('AI_Core_WordPress_AI_Client')) {
+            foreach (array('openai', 'anthropic', 'gemini') as $provider) {
+                if (AI_Core_WordPress_AI_Client::supports_model($provider, (string) $model)) {
+                    return $provider;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Select the deterministic request backend for a provider/model.
+     *
+     * Connector credentials always use core. Hub credentials use core where
+     * the registered provider supports the requested model, retaining the
+     * direct path for newer live models absent from that provider plugin.
+     *
+     * @param string $provider Provider id.
+     * @param string $model    Requested model id.
+     * @return bool
+     */
+    private function should_use_wordpress_ai_client($provider, $model) {
+        if (!class_exists('AI_Core_WordPress_AI_Client')
+            || !AI_Core_WordPress_AI_Client::is_provider_configured($provider)) {
+            return false;
+        }
+
+        $source = $this->get_provider_source($provider);
+        if (in_array($source, array('wordpress', 'wordpress_and_ai_core'), true)) {
+            return true;
+        }
+
+        return '' === $model || AI_Core_WordPress_AI_Client::supports_model($provider, $model);
     }
 
     /**

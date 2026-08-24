@@ -8,6 +8,13 @@
 (function($) {
     'use strict';
 
+    const translated = (key, fallback) => (
+        window.aiCoreAdmin && aiCoreAdmin.strings && aiCoreAdmin.strings[key]
+            ? aiCoreAdmin.strings[key]
+            : fallback
+    );
+    const translatedFormat = (key, fallback, value) => translated(key, fallback).replace('%s', value);
+
     /**
      * Prompt Library Object
      */
@@ -23,7 +30,7 @@
             // Check if aiCoreAdmin is available
             if (typeof aiCoreAdmin === 'undefined') {
                 console.error('AI-Core: aiCoreAdmin object not found. Cannot initialize Prompt Library.');
-                this.showError('Configuration error. Please refresh the page.');
+                this.showError(translated('configurationError', 'Configuration error. Please refresh the page.'));
                 return;
             }
 
@@ -357,7 +364,7 @@
             $('#group-id').val('');
             $('#group-name').val('');
             $('#group-description').val('');
-            $('#ai-core-group-modal-title').text('New Group');
+            $('#ai-core-group-modal-title').text(translated('newGroup', 'New Group'));
             $('#ai-core-group-modal').show().addClass('active');
         },
 
@@ -395,16 +402,16 @@
                             $('#group-id').val(group.id);
                             $('#group-name').val(group.name);
                             $('#group-description').val(group.description || '');
-                            $('#ai-core-group-modal-title').text('Edit Group');
+                            $('#ai-core-group-modal-title').text(translated('editGroup', 'Edit Group'));
                             $('#ai-core-group-modal').show().addClass('active');
                         }
                     } else {
-                        this.showError('Failed to load group data');
+                        this.showError(translated('failedLoadGroup', 'Failed to load group data.'));
                     }
                 },
                 error: (xhr, status, error) => {
                     console.error('Error loading group:', error);
-                    this.showError('Network error loading group');
+                    this.showError(translated('networkLoadGroup', 'Network error while loading the group.'));
                 }
             });
         },
@@ -420,7 +427,7 @@
             const description = $('#group-description').val();
 
             if (!name) {
-                alert('Please enter a group name');
+                alert(translated('enterGroupName', 'Please enter a group name.'));
                 return;
             }
 
@@ -437,16 +444,16 @@
                 success: (response) => {
                     if (response.success) {
                         this.hideGroupModal();
-                        this.showSuccess('Group saved successfully');
+                        this.showSuccess(translated('groupSaved', 'Group saved successfully.'));
                         setTimeout(() => {
                             window.location.reload();
                         }, 500);
                     } else {
-                        alert('Error: ' + response.data.message);
+                        alert(translatedFormat('errorDetail', 'Error: %s', response.data.message));
                     }
                 },
                 error: (xhr, status, error) => {
-                    alert('Error saving group: ' + error);
+                    alert(translatedFormat('saveGroupError', 'Error saving group: %s', error));
                 }
             });
         },
@@ -458,7 +465,7 @@
             e.preventDefault();
             e.stopPropagation();
 
-            if (!confirm('Are you sure you want to delete this group? Prompts in this group will not be deleted.')) {
+            if (!confirm(translated('confirmDeleteGroup', 'Are you sure you want to delete this group? Prompts in this group will not be deleted.'))) {
                 return;
             }
 
@@ -476,16 +483,16 @@
                 },
                 success: (response) => {
                     if (response.success) {
-                        this.showSuccess('Group deleted successfully');
+                        this.showSuccess(translated('groupDeleted', 'Group deleted successfully.'));
                         setTimeout(() => {
                             window.location.reload();
                         }, 500);
                     } else {
-                        alert('Error: ' + response.data.message);
+                        alert(translatedFormat('errorDetail', 'Error: %s', response.data.message));
                     }
                 },
                 error: (xhr, status, error) => {
-                    alert('Error deleting group: ' + error);
+                    alert(translatedFormat('deleteGroupError', 'Error deleting group: %s', error));
                 }
             });
         },
@@ -503,7 +510,7 @@
             $('#prompt-group').val(this.currentGroupId || '');
             $('#prompt-provider').val('');
             $('#prompt-type').val('text');
-            $('#ai-core-modal-title').text('New Prompt');
+            $('#ai-core-modal-title').text(translated('newPrompt', 'New Prompt'));
             $('#ai-core-prompt-result').hide().html('');
 
             const $modal = $('#ai-core-prompt-modal');
@@ -548,7 +555,7 @@
                             $('#prompt-group').val(prompt.group_id || '');
                             $('#prompt-provider').val(prompt.provider || '');
                             $('#prompt-type').val(prompt.type || 'text');
-                            $('#ai-core-modal-title').text('Edit Prompt');
+                            $('#ai-core-modal-title').text(translated('editPrompt', 'Edit Prompt'));
                             $('#ai-core-prompt-result').hide().html('');
                             $('#ai-core-prompt-modal').addClass('active');
                         }
@@ -571,7 +578,7 @@
             const type = $('#prompt-type').val();
 
             if (!title || !content) {
-                alert('Please enter a title and content');
+                alert(translated('enterTitleContent', 'Please enter a title and content.'));
                 return;
             }
 
@@ -591,16 +598,16 @@
                 success: (response) => {
                     if (response.success) {
                         this.hidePromptModal();
-                        this.showSuccess('Prompt saved successfully');
+                        this.showSuccess(translated('promptSaved', 'Prompt saved successfully.'));
                         setTimeout(() => {
                             window.location.reload();
                         }, 500);
                     } else {
-                        alert('Error: ' + response.data.message);
+                        alert(translatedFormat('errorDetail', 'Error: %s', response.data.message));
                     }
                 },
                 error: (xhr, status, error) => {
-                    alert('Error saving prompt: ' + error);
+                    alert(translatedFormat('savePromptError', 'Error saving prompt: %s', error));
                 }
             });
         },
@@ -659,17 +666,17 @@
                                 $sender.append(
                                     '<div class="group-empty-state">' +
                                         '<span class="dashicons dashicons-admin-post"></span>' +
-                                        '<p>No prompts in this group</p>' +
-                                        '<p class="description">Drag prompts here or click + to add</p>' +
+                                        '<p>' + this.escapeHtml(translated('noPromptsGroup', 'No prompts in this group')) + '</p>' +
+                                        '<p class="description">' + this.escapeHtml(translated('dragPromptsHere', 'Drag prompts here or click + to add')) + '</p>' +
                                     '</div>'
                                 );
                             }
                         }
                     }
 
-                    this.showSuccess('Prompt moved successfully');
+                    this.showSuccess(translated('promptMoved', 'Prompt moved successfully.'));
                 } else {
-                    this.showError(response?.data?.message || 'Failed to move prompt');
+                    this.showError(response?.data?.message || translated('failedMovePrompt', 'Failed to move prompt.'));
                     // Revert DOM move on failure
                     if ($sender && $sender.length && $dragged && $dragged.length) {
                         $sender.append($dragged);
@@ -677,7 +684,7 @@
                 }
             }).fail((_xhr, _status, error) => {
                 console.error('Error moving prompt:', error);
-                this.showError('Network error moving prompt');
+                this.showError(translated('networkMovePrompt', 'Network error while moving the prompt.'));
                 if ($sender && $sender.length && $dragged && $dragged.length) {
                     $sender.append($dragged);
                 }
@@ -700,7 +707,7 @@
             e.preventDefault();
             e.stopPropagation();
 
-            if (!confirm('Are you sure you want to delete this prompt?')) {
+            if (!confirm(translated('confirmDeletePrompt', 'Are you sure you want to delete this prompt?'))) {
                 return;
             }
 
@@ -716,16 +723,16 @@
                 },
                 success: (response) => {
                     if (response.success) {
-                        this.showSuccess('Prompt deleted successfully');
+                        this.showSuccess(translated('promptDeleted', 'Prompt deleted successfully.'));
                         setTimeout(() => {
                             window.location.reload();
                         }, 500);
                     } else {
-                        alert('Error: ' + response.data.message);
+                        alert(translatedFormat('errorDetail', 'Error: %s', response.data.message));
                     }
                 },
                 error: (xhr, status, error) => {
-                    alert('Error deleting prompt: ' + error);
+                    alert(translatedFormat('deletePromptError', 'Error deleting prompt: %s', error));
                 }
             });
         },
@@ -742,7 +749,7 @@
             const promptId = $button.data('prompt-id');
 
             // Show immediate loading feedback
-            $button.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Running...');
+            $button.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> ' + translated('running', 'Running...'));
 
             // Remove any existing result
             $card.find('.prompt-card-result').remove();
@@ -761,14 +768,14 @@
                         if (prompt) {
                             this.runPromptInCard($card, prompt.content, prompt.provider, prompt.type, $button);
                         } else {
-                            this.showCardError($card, 'Prompt not found', $button);
+                            this.showCardError($card, translated('promptNotFound', 'Prompt not found.'), $button);
                         }
                     } else {
-                        this.showCardError($card, response.data?.message || 'Failed to load prompt', $button);
+                        this.showCardError($card, response.data?.message || translated('failedLoadPrompt', 'Failed to load prompt.'), $button);
                     }
                 },
                 error: (xhr, status, error) => {
-                    this.showCardError($card, 'Network error: ' + error, $button);
+                    this.showCardError($card, translatedFormat('networkErrorDetail', 'Network error: %s', error), $button);
                 }
             });
         },
@@ -778,7 +785,7 @@
          */
         runPromptInCard: function($card, content, provider, type, $button) {
             // Create result container
-            const $result = $('<div class="prompt-card-result"><div class="loading"><span class="ai-core-spinner"></span> Generating response...</div></div>');
+            const $result = $('<div class="prompt-card-result"><div class="loading"><span class="ai-core-spinner"></span> ' + this.escapeHtml(translated('generatingResponse', 'Generating response...')) + '</div></div>');
             $card.find('.prompt-card-footer').after($result);
 
             // If no provider specified, try to get default from settings
@@ -808,7 +815,7 @@
                         if (response.data.type === 'image') {
                             $result.html(`
                                 <div class="result-success">
-                                    <img src="${response.data.result}" alt="Generated image" style="max-width: 100%; height: auto; border-radius: 4px;" />
+                                    <img src="${response.data.result}" alt="${this.escapeHtml(translated('generatedImage', 'Generated image'))}" style="max-width: 100%; height: auto; border-radius: 4px;" />
                                 </div>
                             `);
                         } else {
@@ -822,16 +829,16 @@
                         $result.html(`
                             <div class="result-error">
                                 <span class="dashicons dashicons-warning"></span>
-                                <strong>Error:</strong> ${this.escapeHtml(response.data?.message || 'Unknown error')}
+                                <strong>${this.escapeHtml(translated('error', 'Error'))}:</strong> ${this.escapeHtml(response.data?.message || translated('unknownError', 'Unknown error'))}
                             </div>
                         `);
                     }
 
                     // Reset button
-                    $button.prop('disabled', false).html('<span class="dashicons dashicons-controls-play"></span> Run');
+                    $button.prop('disabled', false).html('<span class="dashicons dashicons-controls-play"></span> ' + translated('run', 'Run'));
                 },
                 error: (xhr, status, error) => {
-                    let errorMsg = 'Network error';
+                    let errorMsg = translated('networkError', 'Network error');
                     if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
                         errorMsg = xhr.responseJSON.data.message;
                     } else if (error) {
@@ -841,12 +848,12 @@
                     $result.html(`
                         <div class="result-error">
                             <span class="dashicons dashicons-warning"></span>
-                            <strong>Error:</strong> ${this.escapeHtml(errorMsg)}
+                            <strong>${this.escapeHtml(translated('error', 'Error'))}:</strong> ${this.escapeHtml(errorMsg)}
                         </div>
                     `);
 
                     // Reset button
-                    $button.prop('disabled', false).html('<span class="dashicons dashicons-controls-play"></span> Run');
+                    $button.prop('disabled', false).html('<span class="dashicons dashicons-controls-play"></span> ' + translated('run', 'Run'));
                 }
             });
         },
@@ -855,11 +862,11 @@
          * Show error in card
          */
         showCardError: function($card, message, $button) {
-            const $result = $('<div class="prompt-card-result"><div class="result-error"><span class="dashicons dashicons-warning"></span> <strong>Error:</strong> ' + this.escapeHtml(message) + '</div></div>');
+            const $result = $('<div class="prompt-card-result"><div class="result-error"><span class="dashicons dashicons-warning"></span> <strong>' + this.escapeHtml(translated('error', 'Error')) + ':</strong> ' + this.escapeHtml(message) + '</div></div>');
             $card.find('.prompt-card-footer').after($result);
 
             // Reset button
-            $button.prop('disabled', false).html('<span class="dashicons dashicons-controls-play"></span> Run');
+            $button.prop('disabled', false).html('<span class="dashicons dashicons-controls-play"></span> ' + translated('run', 'Run'));
         },
 
         /**
@@ -873,7 +880,7 @@
             const type = $('#prompt-type').val();
 
             if (!content) {
-                alert('Please enter prompt content');
+                alert(translated('enterPromptContent', 'Please enter prompt content.'));
                 return;
             }
 
@@ -896,7 +903,7 @@
          */
         runPrompt: function(content, provider, type, model) {
             const $result = $('#ai-core-prompt-result');
-            $result.show().html('<div class="loading"><span class="ai-core-spinner"></span> Running prompt...</div>');
+            $result.show().html('<div class="loading"><span class="ai-core-spinner"></span> ' + this.escapeHtml(translated('runningPrompt', 'Running prompt...')) + '</div>');
 
             $.ajax({
                 url: aiCoreAdmin.ajaxUrl,
@@ -912,22 +919,22 @@
                 success: (response) => {
                     if (response.success) {
                         if (response.data.type === 'image') {
-                            $result.html(`<img src="${response.data.result}" alt="Generated image" style="max-width: 100%; height: auto;" />`);
+                            $result.html(`<img src="${response.data.result}" alt="${this.escapeHtml(translated('generatedImage', 'Generated image'))}" style="max-width: 100%; height: auto;" />`);
                         } else {
                             $result.html(`<pre>${this.escapeHtml(response.data.result)}</pre>`);
                         }
                     } else {
-                        $result.html(`<div class="error"><span class="dashicons dashicons-warning"></span> Error: ${this.escapeHtml(response.data?.message || 'Unknown error')}</div>`);
+                        $result.html(`<div class="error"><span class="dashicons dashicons-warning"></span> ${this.escapeHtml(translated('error', 'Error'))}: ${this.escapeHtml(response.data?.message || translated('unknownError', 'Unknown error'))}</div>`);
                     }
                 },
                 error: (xhr, status, error) => {
-                    let errorMsg = 'Network error';
+                    let errorMsg = translated('networkError', 'Network error');
                     if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
                         errorMsg = xhr.responseJSON.data.message;
                     } else if (error) {
                         errorMsg = error;
                     }
-                    $result.html(`<div class="error"><span class="dashicons dashicons-warning"></span> Error: ${this.escapeHtml(errorMsg)}</div>`);
+                    $result.html(`<div class="error"><span class="dashicons dashicons-warning"></span> ${this.escapeHtml(translated('error', 'Error'))}: ${this.escapeHtml(errorMsg)}</div>`);
                 }
             });
         },
@@ -980,7 +987,7 @@
                                 URL.revokeObjectURL(pUrl);
                             }
 
-                            this.showSuccess('CSV export completed.');
+                            this.showSuccess(translated('csvExportComplete', 'CSV export completed.'));
                         } else {
                             const dataStr = JSON.stringify(response.data.data, null, 2);
                             const dataBlob = new Blob([dataStr], {type: 'application/json'});
@@ -991,17 +998,17 @@
                             link.click();
                             URL.revokeObjectURL(url);
                             console.log('Export download triggered');
-                            this.showSuccess('Prompts exported successfully!');
+                            this.showSuccess(translated('promptsExported', 'Prompts exported successfully!'));
                         }
 
                         this.hideExportModal();
                     } else {
-                        this.showError(response.data.message || 'Error exporting prompts');
+                        this.showError(response.data.message || translated('exportError', 'Error exporting prompts.'));
                     }
                 },
                 error: (xhr, status, error) => {
                     console.error('Export failed:', status, error);
-                    this.showError('Network error exporting prompts: ' + error);
+                    this.showError(translatedFormat('networkExportError', 'Network error exporting prompts: %s', error));
                 }
             });
         },
@@ -1056,7 +1063,7 @@
             const file = fileInput.files[0];
 
             if (!file) {
-                this.showError('Please select a file');
+                this.showError(translated('selectFile', 'Please select a file.'));
                 return;
             }
 
@@ -1078,17 +1085,17 @@
                                 this.hideImportModal();
                                 this.loadGroups();
                                 this.loadPrompts();
-                                this.showSuccess(response.data.message || 'Import successful!');
+                                this.showSuccess(response.data.message || translated('importSuccessful', 'Import successful!'));
                             } else {
-                                this.showError(response.data.message || 'Error importing prompts');
+                                this.showError(response.data.message || translated('importError', 'Error importing prompts.'));
                             }
                         },
                         error: (xhr, status, error) => {
-                            this.showError('Network error importing prompts: ' + error);
+                            this.showError(translatedFormat('networkImportError', 'Network error importing prompts: %s', error));
                         }
                     });
                 } catch (error) {
-                    this.showError('Invalid JSON file: ' + error.message);
+                    this.showError(translatedFormat('invalidJson', 'Invalid JSON file: %s', error.message));
                 }
             };
             reader.readAsText(file);
@@ -1100,12 +1107,12 @@
         deleteAllPrompts: function(e) {
             e.preventDefault();
 
-            if (!confirm('Are you sure you want to delete ALL prompts and groups? This action cannot be undone!')) {
+            if (!confirm(translated('confirmDeleteAll', 'Are you sure you want to delete ALL prompts and groups? This action cannot be undone!'))) {
                 return;
             }
 
             // Double confirmation for safety
-            if (!confirm('This will permanently delete everything in your Prompt Library. Are you absolutely sure?')) {
+            if (!confirm(translated('confirmDeleteAllAgain', 'This will permanently delete everything in your Prompt Library. Are you absolutely sure?'))) {
                 return;
             }
 
@@ -1118,17 +1125,17 @@
                 },
                 success: (response) => {
                     if (response.success) {
-                        this.showSuccess(response.data.message || 'All prompts deleted successfully');
+                        this.showSuccess(response.data.message || translated('allPromptsDeleted', 'All prompts deleted successfully.'));
                         // Reload page to show empty state
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
                     } else {
-                        this.showError(response.data.message || 'Error deleting prompts');
+                        this.showError(response.data.message || translated('deleteAllError', 'Error deleting prompts.'));
                     }
                 },
                 error: (xhr, status, error) => {
-                    this.showError('Network error deleting prompts: ' + error);
+                    this.showError(translatedFormat('networkDeleteAllError', 'Network error deleting prompts: %s', error));
                 }
             });
         },
@@ -1182,4 +1189,3 @@
     });
 
 })(jQuery);
-

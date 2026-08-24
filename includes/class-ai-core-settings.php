@@ -324,11 +324,11 @@ class AI_Core_Settings {
      * @return void
      */
     public function api_keys_section_callback() {
-        echo '<p>' . esc_html__('Configure your AI provider API keys. At least one API key is required for the plugin to function.', 'opace-ai-prompt-library-api-hub') . '</p>';
+        echo '<p>' . esc_html__('Configure a provider once. On WordPress 7.0 or newer, Opace AI Hub automatically uses credentials from Settings > Connectors and shares Hub credentials with matching WordPress AI provider plugins at runtime.', 'opace-ai-prompt-library-api-hub') . '</p>';
         echo '<p style="background: #f0f6fc; border-left: 4px solid #2271b1; padding: 12px; margin: 16px 0;">';
         echo '<span class="dashicons dashicons-info" style="color: #2271b1;"></span> ';
-        echo '<strong>' . esc_html__('Auto-Validation:', 'opace-ai-prompt-library-api-hub') . '</strong> ';
-        echo esc_html__('API keys are automatically validated and saved when you paste them. No need to click a "Test" button!', 'opace-ai-prompt-library-api-hub');
+        echo '<strong>' . esc_html__('One credential:', 'opace-ai-prompt-library-api-hub') . '</strong> ';
+        echo esc_html__('Keys are never copied between the Hub and WordPress Connectors. Connector credentials take precedence; Hub keys remain encrypted in Hub storage.', 'opace-ai-prompt-library-api-hub');
         echo '</p>';
     }
 
@@ -436,12 +436,18 @@ class AI_Core_Settings {
         $field_name = $provider . '_api_key';
         $value = $settings[$field_name] ?? '';
         $has_saved_key = !empty($value);
+        $api = AI_Core_API::get_instance();
+        $source = $api->get_provider_source($provider);
+        $is_configured = in_array($provider, $api->get_configured_providers(), true);
+        $wordpress_managed = in_array($source, array('wordpress', 'wordpress_and_ai_core'), true);
 
         // Masked hint only. The key itself is never written into the markup,
         // so the browser has no copy of it and view-source shows nothing.
         $masked_hint = $has_saved_key
             ? '••••••••••••••••••••' . substr($value, -4)
-            : __('Enter your API key', 'opace-ai-prompt-library-api-hub');
+            : ($wordpress_managed
+                ? __('Managed by WordPress Connectors', 'opace-ai-prompt-library-api-hub')
+                : __('Enter your API key', 'opace-ai-prompt-library-api-hub'));
 
         echo '<div class="ai-core-api-key-field" data-provider="' . esc_attr($provider) . '" data-has-saved="' . ($has_saved_key ? '1' : '0') . '">';
 
@@ -463,10 +469,10 @@ class AI_Core_Settings {
         echo 'placeholder="' . esc_attr($masked_hint) . '" />';
 
         echo '<button type="button" class="button ai-core-test-key" data-provider="' . esc_attr($provider) . '">';
-        echo esc_html__('Test Key', 'opace-ai-prompt-library-api-hub');
+        echo esc_html($wordpress_managed && !$has_saved_key ? __('Check Connection', 'opace-ai-prompt-library-api-hub') : __('Test Key', 'opace-ai-prompt-library-api-hub'));
         echo '</button>';
 
-        echo '<button type="button" class="button ai-core-refresh-models" data-provider="' . esc_attr($provider) . '"' . ($has_saved_key ? '' : ' disabled') . '>';
+        echo '<button type="button" class="button ai-core-refresh-models" data-provider="' . esc_attr($provider) . '"' . ($is_configured ? '' : ' disabled') . '>';
         echo esc_html__('Refresh Models', 'opace-ai-prompt-library-api-hub');
         echo '</button>';
 
@@ -479,7 +485,32 @@ class AI_Core_Settings {
         echo '<span class="ai-core-key-status" id="' . esc_attr($provider) . '-status"></span>';
         echo '</div>';
 
-        if ($has_saved_key) {
+        if ('wordpress_and_ai_core' === $source) {
+            echo '<p class="description" style="color: #b32d2e;">';
+            echo '<span class="dashicons dashicons-warning"></span> ';
+            echo esc_html__('A key exists in both places. WordPress Connectors takes precedence; clear the Hub key to remove the duplicate.', 'opace-ai-prompt-library-api-hub');
+            echo '</p>';
+        } elseif ('wordpress' === $source && $is_configured) {
+            echo '<p class="description" style="color: #2271b1;">';
+            echo '<span class="dashicons dashicons-yes-alt"></span> ';
+            echo esc_html__('Connected through WordPress Settings > Connectors. No second key is needed here.', 'opace-ai-prompt-library-api-hub');
+            echo '</p>';
+        } elseif ('wordpress' === $source) {
+            echo '<p class="description" style="color: #b32d2e;">';
+            echo '<span class="dashicons dashicons-warning"></span> ';
+            echo esc_html__('A WordPress Connector key exists, but its matching AI provider plugin is not active or configured.', 'opace-ai-prompt-library-api-hub');
+            echo '</p>';
+        } elseif ('ai_core' === $source) {
+            echo '<p class="description" style="color: #2271b1;">';
+            echo '<span class="dashicons dashicons-yes-alt"></span> ';
+            echo esc_html__('The encrypted Hub key is also available at runtime to plugins using the WordPress AI Client.', 'opace-ai-prompt-library-api-hub');
+            echo '</p>';
+        } elseif ('ai_core_direct' === $source) {
+            echo '<p class="description" style="color: #2271b1;">';
+            echo '<span class="dashicons dashicons-yes-alt"></span> ';
+            echo esc_html__('The encrypted Hub key is active. Install and activate the matching WordPress AI provider plugin to share it with external AI Client plugins.', 'opace-ai-prompt-library-api-hub');
+            echo '</p>';
+        } elseif ($has_saved_key) {
             echo '<p class="description" style="color: #2271b1;">';
             echo '<span class="dashicons dashicons-yes-alt"></span> ';
             echo esc_html__('API key validated and saved automatically. Use Test Key anytime to re-verify.', 'opace-ai-prompt-library-api-hub');
@@ -512,19 +543,23 @@ class AI_Core_Settings {
         echo '<div class="ai-core-provider-grid">';
 
         foreach ($providers as $key => $label) {
-            $has_key = !empty($settings[$key . '_api_key']);
-            $models = $has_key ? $api->get_available_models($key) : array();
+            $is_configured = in_array($key, $api->get_configured_providers(), true);
+            $source = $api->get_provider_source($key);
+            $models = $is_configured ? $api->get_available_models($key) : array();
             $models = array_values(array_filter($models, static function ($model) use ($key) {
                 return \AICore\Registry\ModelRegistry::isTextGenerationModel((string) $model, $key);
             }));
             $selected_model = $provider_models[$key] ?? '';
             $options = $provider_options[$key] ?? array();
 
-            echo '<div class="ai-core-provider-card" data-provider="' . esc_attr($key) . '" data-has-key="' . ($has_key ? '1' : '0') . '">';
+            echo '<div class="ai-core-provider-card" data-provider="' . esc_attr($key) . '" data-has-key="' . ($is_configured ? '1' : '0') . '">';
             echo '<div class="ai-core-provider-card__header">';
             echo '<h4>' . esc_html($label) . '</h4>';
-            echo '<span class="ai-core-provider-status ' . ($has_key ? 'is-active' : 'is-inactive') . '">';
-            echo esc_html($has_key ? __('Connected', 'opace-ai-prompt-library-api-hub') : __('Awaiting API Key', 'opace-ai-prompt-library-api-hub'));
+            echo '<span class="ai-core-provider-status ' . ($is_configured ? 'is-active' : 'is-inactive') . '">';
+            $status_label = $is_configured
+                ? (in_array($source, array('wordpress', 'wordpress_and_ai_core'), true) ? __('Connected via WordPress', 'opace-ai-prompt-library-api-hub') : __('Connected via Hub', 'opace-ai-prompt-library-api-hub'))
+                : __('Awaiting Provider', 'opace-ai-prompt-library-api-hub');
+            echo esc_html($status_label);
             echo '</span>';
             echo '</div>';
 
@@ -536,10 +571,10 @@ class AI_Core_Settings {
             // aria-label repeats the visible label text and adds the provider,
             // so the four cards do not present four identical names.
             /* translators: %s: provider name, e.g. OpenAI. */
-            echo '<select id="' . esc_attr($model_field_id) . '" class="ai-core-provider-model" aria-label="' . esc_attr(sprintf(__('%s default model', 'opace-ai-prompt-library-api-hub'), $label)) . '" data-provider="' . esc_attr($key) . '" name="' . esc_attr($this->option_name) . '[provider_models][' . esc_attr($key) . ']" ' . ($has_key ? '' : 'disabled') . '>';
+            echo '<select id="' . esc_attr($model_field_id) . '" class="ai-core-provider-model" aria-label="' . esc_attr(sprintf(__('%s default model', 'opace-ai-prompt-library-api-hub'), $label)) . '" data-provider="' . esc_attr($key) . '" name="' . esc_attr($this->option_name) . '[provider_models][' . esc_attr($key) . ']" ' . ($is_configured ? '' : 'disabled') . '>';
 
-            if (!$has_key) {
-                echo '<option value="">' . esc_html__('Add an API key to load models', 'opace-ai-prompt-library-api-hub') . '</option>';
+            if (!$is_configured) {
+                echo '<option value="">' . esc_html__('Configure a provider to load models', 'opace-ai-prompt-library-api-hub') . '</option>';
             } else {
                 if (empty($models)) {
                     echo '<option value="">' . esc_html__('Loading models...', 'opace-ai-prompt-library-api-hub') . '</option>';
@@ -556,15 +591,15 @@ class AI_Core_Settings {
             echo '</select>';
 
             echo '<div class="ai-core-provider-params" data-provider="' . esc_attr($key) . '">';
-            if (!$has_key) {
-                echo '<p class="description">' . esc_html__('Add an API key to configure provider defaults.', 'opace-ai-prompt-library-api-hub') . '</p>';
+            if (!$is_configured) {
+                echo '<p class="description">' . esc_html__('Configure a provider to set defaults.', 'opace-ai-prompt-library-api-hub') . '</p>';
             }
             echo '</div>'; // dynamic params container
 
             echo '</div>'; // body
 
             echo '<div class="ai-core-provider-card__footer">';
-            echo '<button type="button" class="button-link ai-core-provider-refresh" data-provider="' . esc_attr($key) . '"' . ($has_key ? '' : ' disabled') . '>' . esc_html__('Refresh models', 'opace-ai-prompt-library-api-hub') . '</button>';
+            echo '<button type="button" class="button-link ai-core-provider-refresh" data-provider="' . esc_attr($key) . '"' . ($is_configured ? '' : ' disabled') . '>' . esc_html__('Refresh models', 'opace-ai-prompt-library-api-hub') . '</button>';
             echo '</div>';
 
             echo '</div>'; // card

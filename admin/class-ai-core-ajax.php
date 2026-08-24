@@ -132,6 +132,10 @@ class AI_Core_AJAX {
 
         update_option('ai_core_settings', $settings);
 
+        if (class_exists('AI_Core_WordPress_AI_Client')) {
+            AI_Core_WordPress_AI_Client::bridge_provider($provider, $api_key);
+        }
+
         $models = $validator->get_available_models($provider, $api_key, true);
 
         // Saving above ran the sanitize callback, where AI_Core_Model_Defaults
@@ -168,6 +172,7 @@ class AI_Core_AJAX {
             'preferred_model' => $activeModel,
             'parameters' => $parameterSchema,
             'model_meta' => \AICore\Registry\ModelRegistry::exportProviderMetadata()[$provider] ?? array(),
+            'source' => AI_Core_API::get_instance()->get_provider_source($provider),
         ));
     }
 
@@ -191,21 +196,24 @@ class AI_Core_AJAX {
 
         $settings = get_option('ai_core_settings', array());
         $field = $provider . '_api_key';
+        $api = AI_Core_API::get_instance();
+        $source_before = $api->get_provider_source($provider);
+        $still_configured = in_array($source_before, array('wordpress', 'wordpress_and_ai_core'), true);
 
         if (isset($settings[$field])) {
             $settings[$field] = '';
         }
 
-        if (isset($settings['provider_models'][$provider])) {
+        if (!$still_configured && isset($settings['provider_models'][$provider])) {
             unset($settings['provider_models'][$provider]);
         }
 
-        if (isset($settings['provider_options'][$provider])) {
+        if (!$still_configured && isset($settings['provider_options'][$provider])) {
             unset($settings['provider_options'][$provider]);
         }
 
         if (!empty($settings['default_provider']) && $settings['default_provider'] === $provider) {
-            $settings['default_provider'] = $this->get_next_configured_provider($settings);
+            $settings['default_provider'] = $still_configured ? $provider : $this->get_next_configured_provider($settings, $provider);
         }
 
         update_option('ai_core_settings', $settings);
@@ -217,6 +225,8 @@ class AI_Core_AJAX {
             'message' => __('API key removed.', 'opace-ai-prompt-library-api-hub'),
             'provider' => $provider,
             'default_provider' => $settings['default_provider'],
+            'still_configured' => $still_configured,
+            'source' => $still_configured ? 'wordpress' : 'none',
         ));
     }
     
@@ -241,6 +251,17 @@ class AI_Core_AJAX {
         if ('' === $api_key && '' !== $provider) {
             $settings = get_option('ai_core_settings', array());
             $api_key  = $settings[$provider . '_api_key'] ?? '';
+        }
+
+        if ('' !== $provider && '' === $api_key) {
+            $api = AI_Core_API::get_instance();
+            if (in_array($provider, $api->get_configured_providers(), true)) {
+                wp_send_json_success(array(
+                    'message' => __('Provider is configured through WordPress Connectors.', 'opace-ai-prompt-library-api-hub'),
+                    'provider' => $provider,
+                    'source' => $api->get_provider_source($provider),
+                ));
+            }
         }
 
         if (empty($provider) || empty($api_key)) {
@@ -283,8 +304,14 @@ class AI_Core_AJAX {
         $api_key = isset($_POST['api_key']) ? sanitize_text_field(wp_unslash($_POST['api_key'])) : '';
         $force_refresh = !empty($_POST['force_refresh']);
 
-        $validator = AI_Core_Validator::get_instance();
-        $models = $validator->get_available_models($provider, $api_key ?: null, (bool) $force_refresh);
+        $api = AI_Core_API::get_instance();
+        $source = $api->get_provider_source($provider);
+        if ('' !== $api_key || in_array($source, array('ai_core_direct', 'none'), true)) {
+            $validator = AI_Core_Validator::get_instance();
+            $models = $validator->get_available_models($provider, $api_key ?: null, (bool) $force_refresh);
+        } else {
+            $models = $api->get_available_models($provider);
+        }
         $models = array_values(array_filter($models, static function ($model) use ($provider) {
             return \AICore\Registry\ModelRegistry::isTextGenerationModel((string) $model, $provider);
         }));
@@ -305,6 +332,8 @@ class AI_Core_AJAX {
             'count' => count($models),
             'provider' => $provider,
             'has_saved_key' => $has_saved_key,
+            'configured' => in_array($provider, $api->get_configured_providers(), true),
+            'source' => $source,
             'selected_model' => $selectedModel,
             'preferred_model' => $preferredModel,
             'parameters' => $preferredModel ? \AICore\Registry\ModelRegistry::getParameterSchema($preferredModel) : array(),
@@ -374,12 +403,14 @@ class AI_Core_AJAX {
     /**
      * Determine next configured provider for defaults
      *
-     * @param array $settings Current settings array
+     * @param array  $settings Current settings array
+     * @param string $exclude  Provider being removed.
      * @return string Provider key or empty string
      */
-    private function get_next_configured_provider($settings) {
+    private function get_next_configured_provider($settings, $exclude = '') {
+        $configured = AI_Core_API::get_instance()->get_configured_providers();
         foreach (array('openai', 'anthropic', 'gemini') as $provider) {
-            if (!empty($settings[$provider . '_api_key'])) {
+            if ($provider !== $exclude && (in_array($provider, $configured, true) || !empty($settings[$provider . '_api_key']))) {
                 return $provider;
             }
         }
@@ -429,6 +460,7 @@ class AI_Core_AJAX {
         $provider = isset($_POST['provider']) ? sanitize_text_field(wp_unslash( $_POST['provider'] )) : '';
         $model = isset($_POST['model']) ? sanitize_text_field(wp_unslash( $_POST['model'] )) : '';
         $type = isset($_POST['type']) ? sanitize_text_field(wp_unslash( $_POST['type'] )) : 'text';
+        $settings = get_option('ai_core_settings', array());
 
         if (empty($prompt_content)) {
             wp_send_json_error(array('message' => __('Prompt content is required', 'opace-ai-prompt-library-api-hub')));
@@ -447,34 +479,9 @@ class AI_Core_AJAX {
             }
         }
 
-        // Get settings to check if API keys are configured
-        $settings = get_option('ai_core_settings', array());
-
-        // Check if any API key is configured
-        $has_key = !empty($settings['openai_api_key']) ||
-                   !empty($settings['anthropic_api_key']) ||
-                   !empty($settings['gemini_api_key']);
-
-        if (!$has_key) {
-            wp_send_json_error(array('message' => __('Opace AI Hub is not configured. Please add at least one API key.', 'opace-ai-prompt-library-api-hub')));
-        }
-
-        // Initialize Opace AI Hub with current settings
-        if (class_exists('AICore\\AICore')) {
-            $config = array();
-
-            if (!empty($settings['openai_api_key'])) {
-                $config['openai_api_key'] = $settings['openai_api_key'];
-            }
-            if (!empty($settings['anthropic_api_key'])) {
-                $config['anthropic_api_key'] = $settings['anthropic_api_key'];
-            }
-            if (!empty($settings['gemini_api_key'])) {
-                $config['gemini_api_key'] = $settings['gemini_api_key'];
-            }
-            \AICore\AICore::init($config);
-        } else {
-            wp_send_json_error(array('message' => __('Opace AI Hub library not found.', 'opace-ai-prompt-library-api-hub')));
+        $api = AI_Core_API::get_instance();
+        if (!in_array($provider, $api->get_configured_providers(), true)) {
+            wp_send_json_error(array('message' => __('This provider is not configured in Opace AI Hub or WordPress Connectors.', 'opace-ai-prompt-library-api-hub')));
         }
 
         try {
@@ -503,7 +510,12 @@ class AI_Core_AJAX {
                     wp_send_json_error(array('message' => $result->get_error_message()));
                 }
 
-                $image_url = $result['url'] ?? $result['data'][0]['url'] ?? '';
+                $image_item = $result['data'][0] ?? array();
+                $image_url = $result['url'] ?? $image_item['url'] ?? '';
+                if ('' === $image_url && !empty($image_item['b64_json'])) {
+                    $mime_type = !empty($image_item['mime_type']) ? (string) $image_item['mime_type'] : 'image/png';
+                    $image_url = 'data:' . $mime_type . ';base64,' . $image_item['b64_json'];
+                }
 
                 wp_send_json_success(array(
                     'result' => $image_url,

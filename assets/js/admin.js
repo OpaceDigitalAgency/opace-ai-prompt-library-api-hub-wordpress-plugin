@@ -8,6 +8,13 @@
 (function($) {
     'use strict';
 
+    const translated = (key, fallback) => (
+        window.aiCoreAdmin && aiCoreAdmin.strings && aiCoreAdmin.strings[key]
+            ? aiCoreAdmin.strings[key]
+            : fallback
+    );
+    const translatedFormat = (key, fallback, value) => translated(key, fallback).replace('%s', value);
+
     const initialSelectedModels = (aiCoreAdmin.providers && aiCoreAdmin.providers.selectedModels) || {};
     const providerModelsMap = {};
     Object.keys(initialSelectedModels).forEach((provider) => {
@@ -18,6 +25,7 @@
         debounceTimers: {},
         models: (aiCoreAdmin.providers && aiCoreAdmin.providers.models) || {},
         configured: new Set(aiCoreAdmin.providers && aiCoreAdmin.providers.configured ? aiCoreAdmin.providers.configured : []),
+        sources: $.extend({}, (aiCoreAdmin.providers && aiCoreAdmin.providers.sources) || {}),
         defaultProvider: aiCoreAdmin.providers && aiCoreAdmin.providers.default ? aiCoreAdmin.providers.default : '',
         saving: {},
         // Keys typed in this page session only. The server never sends a key
@@ -128,6 +136,10 @@
          */
         hasSavedKey: function(provider) {
             return $('#' + provider + '_api_key').attr('data-has-saved') === '1';
+        },
+
+        hasConfiguredProvider: function(provider) {
+            return state.configured.has(provider);
         },
 
         setSavedKeyFlag: function(provider, hasKey) {
@@ -351,6 +363,7 @@
             $clearButton.prop('disabled', false);
 
             state.configured.add(provider);
+            state.sources[provider] = data.source || 'ai_core';
             this.markProviderConnected(provider);
 
             if (data.model_meta) {
@@ -386,7 +399,7 @@
         },
 
         fetchModels: function(provider, options = {}) {
-            if (!this.hasSavedKey(provider)) {
+            if (!this.hasConfiguredProvider(provider)) {
                 this.markProviderDisconnected(provider);
                 return;
             }
@@ -494,16 +507,26 @@
                 $input.val('').attr('placeholder', aiCoreAdmin.strings.enterKeyPlaceholder);
                 this.setSavedKeyFlag(provider, false);
                 $('.ai-core-clear-key[data-field="' + provider + '_api_key"]').remove();
-                $('.ai-core-refresh-models[data-provider="' + provider + '"]').prop('disabled', true);
 
                 this.showStatus($status, 'notice', aiCoreAdmin.strings.cleared);
 
                 delete state.sessionKeys[provider];
-                state.configured.delete(provider);
-                delete state.models[provider];
-                delete state.providerModels[provider];
-                this.markProviderDisconnected(provider);
-                this.removeProviderOption(provider);
+                if (response.data && response.data.still_configured) {
+                    state.configured.add(provider);
+                    state.sources[provider] = response.data.source || 'wordpress';
+                    $input.attr('placeholder', aiCoreAdmin.strings.wordpressPlaceholder);
+                    $('.ai-core-refresh-models[data-provider="' + provider + '"]').prop('disabled', false);
+                    this.markProviderConnected(provider);
+                    this.fetchModels(provider, { force: false, showStatus: false });
+                } else {
+                    state.configured.delete(provider);
+                    state.sources[provider] = 'none';
+                    $('.ai-core-refresh-models[data-provider="' + provider + '"]').prop('disabled', true);
+                    delete state.models[provider];
+                    delete state.providerModels[provider];
+                    this.markProviderDisconnected(provider);
+                    this.removeProviderOption(provider);
+                }
 
                 if (response.data && response.data.default_provider) {
                     state.defaultProvider = response.data.default_provider;
@@ -564,8 +587,10 @@
 
         markProviderConnected: function(provider) {
             const $card = $('.ai-core-provider-card[data-provider="' + provider + '"]');
+            const source = state.sources[provider] || '';
+            const throughWordPress = source === 'wordpress' || source === 'wordpress_and_ai_core';
             $card.attr('data-has-key', '1').addClass('is-active');
-            $card.find('.ai-core-provider-status').text(aiCoreAdmin.strings.connected).removeClass('is-inactive').addClass('is-active');
+            $card.find('.ai-core-provider-status').text(throughWordPress ? aiCoreAdmin.strings.connectedViaWordPress : aiCoreAdmin.strings.connectedViaHub).removeClass('is-inactive').addClass('is-active');
             $card.find('.ai-core-provider-model').prop('disabled', false);
             $card.find('.ai-core-provider-refresh').prop('disabled', false);
             this.ensureProviderOptionExists(provider);
@@ -758,7 +783,9 @@
             // is nothing here to re-test with.
             const apiKey = $input.val() || state.sessionKeys[provider] || '';
 
-            if (!apiKey) {
+            const source = state.sources[provider] || '';
+            const wordpressManaged = source === 'wordpress' || source === 'wordpress_and_ai_core';
+            if (!apiKey && !wordpressManaged) {
                 const message = this.hasSavedKey(provider)
                     ? (aiCoreAdmin.strings.pasteKeyToTest || 'A key is saved for this provider. Paste it again to re-test it.')
                     : aiCoreAdmin.strings.missingKey;
@@ -848,7 +875,7 @@
             }
 
             const originalText = $button.text();
-            $button.prop('disabled', true).text(aiCoreAdmin.strings.saving || 'Resetting...');
+            $button.prop('disabled', true).text(translated('resetting', 'Resetting...'));
 
             $.ajax({
                 url: aiCoreAdmin.ajaxUrl,
@@ -1025,16 +1052,16 @@
             }).done((response) => {
                 if (response && response.success) {
                     if (response.data.type === 'image') {
-                        $result.html('<img src="' + response.data.result + '" alt="Generated image" style="max-width:100%;height:auto;" />');
+                        $result.html('<img src="' + response.data.result + '" alt="' + this.escapeHtml(translated('generatedImage', 'Generated image')) + '" style="max-width:100%;height:auto;" />');
                     } else {
                         $result.html('<pre style="white-space:pre-wrap;word-break:break-word;">' + this.escapeHtml(response.data.result) + '</pre>');
                     }
                 } else {
                     const message = response && response.data && response.data.message ? response.data.message : aiCoreAdmin.strings.error;
-                    $result.html('<div class="error" style="color:#d63638;padding:10px;background:#fcf0f1;border:1px solid #d63638;border-radius:4px;">Error: ' + this.escapeHtml(message) + '</div>');
+                    $result.html('<div class="error" style="color:#d63638;padding:10px;background:#fcf0f1;border:1px solid #d63638;border-radius:4px;">' + this.escapeHtml(translatedFormat('errorDetail', 'Error: %s', message)) + '</div>');
                 }
             }).fail((xhr, status, error) => {
-                $result.html('<div class="error" style="color:#d63638;padding:10px;background:#fcf0f1;border:1px solid #d63638;border-radius:4px;">Error: ' + this.escapeHtml(error || status) + '</div>');
+                $result.html('<div class="error" style="color:#d63638;padding:10px;background:#fcf0f1;border:1px solid #d63638;border-radius:4px;">' + this.escapeHtml(translatedFormat('errorDetail', 'Error: %s', error || status)) + '</div>');
             });
         },
 
@@ -1108,9 +1135,9 @@
 
             // Add visual indicator for disabled option
             if (!supportsImageGeneration && disabledReason) {
-                $imageOption.text('Image Generation (' + disabledReason + ')');
+                $imageOption.text(translatedFormat('imageGenerationUnavailable', 'Image Generation (%s)', disabledReason));
             } else {
-                $imageOption.text('Image Generation');
+                $imageOption.text(translated('imageGeneration', 'Image Generation'));
             }
         },
 
@@ -1150,14 +1177,14 @@
             const pluginFile = $btn.data('plugin-file');
 
             if (!pluginFile) {
-                alert('Invalid plugin file.');
+                alert(translated('invalidPluginFile', 'Invalid plugin file.'));
                 return;
             }
 
             // Disable button and show loading
             $btn.prop('disabled', true);
             const originalHtml = $btn.html();
-            $btn.html('<span class="dashicons dashicons-update spin"></span> Activating...');
+            $btn.html('<span class="dashicons dashicons-update spin"></span> ' + translated('activating', 'Activating...'));
 
             // Send AJAX request
             $.ajax({
@@ -1171,7 +1198,7 @@
                 success: function(response) {
                     if (response.success) {
                         // Show success message
-                        $btn.html('<span class="dashicons dashicons-yes-alt"></span> Active');
+                        $btn.html('<span class="dashicons dashicons-yes-alt"></span> ' + translated('active', 'Active'));
                         $btn.removeClass('button-primary ai-core-activate-addon')
                             .addClass('button-disabled');
 
@@ -1192,12 +1219,12 @@
                         }, 1000);
                     } else {
                         $btn.html(originalHtml).prop('disabled', false);
-                        alert(response.data.message || 'Activation failed.');
+                        alert(response.data.message || translated('activationFailed', 'Activation failed.'));
                     }
                 },
                 error: function(xhr, status, error) {
                     $btn.html(originalHtml).prop('disabled', false);
-                    alert('Activation failed: ' + error);
+                    alert(translatedFormat('activationFailedDetail', 'Activation failed: %s', error));
                 }
             });
         }

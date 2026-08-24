@@ -7,7 +7,7 @@
 **Configure AI providers once, then share their models, prompts and usage data across compatible WordPress plugins.**
 
 <p align="center">
-  <img alt="Opace AI Hub version 1.0.10" src="https://img.shields.io/badge/version-1.0.10-0A7DBB">
+  <img alt="Opace AI Hub version 1.0.11" src="https://img.shields.io/badge/version-1.0.11-0A7DBB">
   <img alt="Requires WordPress 6.5 or newer" src="https://img.shields.io/badge/WordPress-6.5%2B-21759B">
   <img alt="Tested up to WordPress 7.1" src="https://img.shields.io/badge/tested%20up%20to-WordPress%207.1-21759B">
   <img alt="Requires PHP 7.4 or newer" src="https://img.shields.io/badge/PHP-7.4%2B-777BB4">
@@ -251,6 +251,14 @@ Uninstall** before deleting the plugin. Opace AI Hub does not delete another plu
 Future compatible plugins can use the same public PHP API. Roadmap names describe direction, not a
 promise of availability.
 
+## WordPress AI Client integration
+
+On WordPress 7.0 or newer, version 1.0.11 shares credentials at runtime with registered WordPress AI
+providers. Connector, environment-variable and constant credentials take precedence and are never
+copied into Hub storage. An encrypted Hub key can also authenticate the matching core provider for
+external plugins in the same request. This requires the corresponding official OpenAI, Anthropic or
+Google AI provider plugin; WordPress core supplies the client and Connector UI, not provider implementations.
+
 ## Video walkthrough
 
 [![Watch the Opace AI Hub walkthrough](https://img.youtube.com/vi/nn3tV6UqJT4/maxresdefault.jpg)](https://www.youtube.com/watch?v=nn3tV6UqJT4)
@@ -269,7 +277,7 @@ promise of availability.
 
 ## Release history
 
-Version 1.0.10 documents the complete timestamped live inventory and distinguishes selectable generation models from catalogued specialist models. Version 1.0.9 makes the WordPress.org links clickable. Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved page logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
+Version 1.0.11 adds two-way runtime credential and model integration with the WordPress 7.0 AI Client and Connectors APIs without duplicating stored keys, and makes the complete reachable admin interface translation-ready. Version 1.0.10 documents the complete timestamped live inventory and distinguishes selectable generation models from catalogued specialist models. Version 1.0.9 makes the WordPress.org links clickable. Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved page logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
 classifies the complete provider catalogue while keeping non-prose products out of
 text-model selectors. Version 1.0.4 retries
 transient provider connection failures once. Version 1.0.3 synchronises every
@@ -285,7 +293,7 @@ bin/build-zip.sh
 ```
 
 The build script checks that the plugin header, `AI_CORE_VERSION` and the WordPress.org stable tag
-match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.10.zip`, makes the installed directory
+match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.11.zip`, makes the installed directory
 slug `opace-ai-prompt-library-api-hub`, and excludes development files and unshipped add-ons.
 
 ## Licence

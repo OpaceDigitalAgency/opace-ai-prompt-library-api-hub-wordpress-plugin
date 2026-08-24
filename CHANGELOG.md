@@ -1,5 +1,12 @@
 # Opace AI Hub changelog
 
+## 1.0.11 — 23 August 2026
+
+- integrate WordPress 7.0 AI Client providers and Connector-managed credentials without copying secrets between stores
+- share encrypted Hub credentials at runtime with matching registered WordPress AI provider plugins
+- use WordPress provider model metadata and request routing across Settings, Prompt Library and the public Hub API
+- give Connector, environment-variable and constant credentials precedence and report duplicate-key status clearly
+
 ## 1.0.10 — 23 August 2026
 
 - replace the incomplete built-in fallback list with a timestamped snapshot of all 192 models returned by live provider discovery

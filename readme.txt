@@ -4,7 +4,7 @@ Tags: artificial intelligence, openai, claude, gemini, automation
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.10
+Stable tag: 1.0.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Manage OpenAI, Anthropic and Gemini credentials once, then share models, prompts
 
 == Description ==
 
-**Compatibility:** Version 1.0.10 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
+**Compatibility:** Version 1.0.11 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
 
 Opace AI Hub is independently developed by Opace Digital Agency and is not affiliated with, endorsed by or sponsored by OpenAI, Anthropic or Google.
 
@@ -184,7 +184,7 @@ pricing, negotiated rates and provider billing changes can make an invoice diffe
 1. Upload the `opace-ai-prompt-library-api-hub` ZIP through Plugins > Add New Plugin > Upload Plugin, or install it from the WordPress.org Plugin Directory after approval.
 2. Activate Opace AI Hub.
 3. Open Opace AI Hub > Settings.
-4. Enter a key for at least one provider and select Test Key.
+4. Enter a key for at least one provider, or on WordPress 7.0+ configure it under Settings > Connectors.
 5. Select a default provider and save.
 
 Compatible plugins can then use the shared configuration.
@@ -201,13 +201,14 @@ usage under its own pricing and terms.
 No. It manages provider connections, models, prompts and usage data. Install a compatible plugin such
 as AI-Scribe to generate content.
 
-= Why not use the WordPress core AI Client instead of direct provider integration? =
+= How does the WordPress core AI Client integration work? =
 
 The core AI Client (WordPress 7.0+) can use multiple configured providers, discover suitable models and
-generate text or images. Opace AI Hub remains useful for sites running WordPress 6.5 or later and for
-companion plugins that need its shared prompt library, explicit provider and model controls, and
-consolidated usage and published-rate cost records. Supporting the core AI Client as an additional
-backend is on the roadmap.
+generate text or images. Version 1.0.11 uses a Connector credential without copying it into Hub storage.
+If the key is stored in the Hub, the Hub supplies its decrypted value to the matching WordPress provider
+for that request only, so external plugins using the core client can use it too. The official OpenAI,
+Anthropic or Google provider plugin must be active. When both stores contain a key, WordPress Connectors
+takes precedence. WordPress 6.5 to 6.9 continues to use the Hub's direct provider integration.
 
 = Can I use more than one provider? =
 
@@ -221,8 +222,9 @@ region and provider rollout.
 
 = Are API keys visible to browser visitors? =
 
-No. Keys are stored server-side, encrypted at rest, and are not printed into public pages or normal
-Opace AI Hub responses. Other trusted server-side WordPress plugins can use Opace AI Hub's PHP API.
+No. Keys stored by Opace AI Hub are server-side, encrypted at rest, and are not printed into public pages
+or normal Hub responses. WordPress Connector credentials remain under WordPress core's storage rules and
+are not copied into the Hub. Other trusted server-side plugins can use the Hub or WordPress AI Client APIs.
 
 = What happens when I uninstall Opace AI Hub? =
 
@@ -254,6 +256,15 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 * [AI SEO services](https://opace.agency/services/ai-seo/)
 
 == Changelog ==
+
+= 1.0.11 =
+
+* Added two-way runtime credential sharing with the WordPress 7.0 AI Client and Connectors APIs.
+* Used Connector, environment-variable or constant credentials in the Hub without copying them into Hub storage.
+* Shared encrypted Hub credentials with matching registered WordPress AI provider plugins without writing a second Connector key.
+* Added WordPress AI provider models to Hub selectors and made Settings and Prompt Library requests use the active core provider.
+* Made credential precedence and duplicate-key status explicit: WordPress Connectors wins when both stores contain a key.
+* Made the complete reachable admin and Prompt Library interface translation-ready, including JavaScript actions, confirmations and errors.
 
 = 1.0.10 =
 
@@ -324,6 +335,10 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 * Consolidated all completed pre-release work as the first public 1.0 release.
 
 == Upgrade Notice ==
+
+= 1.0.11 =
+
+Enter each provider key once. WordPress 7.0 AI Client plugins and Opace AI Hub can now use the same runtime credential when the matching provider plugin is active, with all reachable Hub screens available to WordPress language packs.
 
 = 1.0.10 =
 

@@ -3,7 +3,7 @@
  * Plugin Name: Opace AI Prompt Library & API Integration Hub for OpenAI, Claude & Gemini
  * Plugin URI: https://opace.agency/services/web-design/wordpress-development/
  * Description: Connect WordPress plugins to OpenAI, Anthropic Claude and Google Gemini with shared credentials, live models, prompts and usage records.
- * Version: 1.0.10
+ * Version: 1.0.11
  * Author: Opace Digital Agency
  * Author URI: https://opace.agency
  * License: GPLv2 or later
@@ -15,7 +15,7 @@
  * Tags: ai, openai, claude, gemini, api, integration, artificial intelligence
  *
  * @package AI_Core
- * @version 1.0.10
+ * @version 1.0.11
  */
 
 // Prevent direct access
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
 // already be loaded when Opace AI Hub is activated, which otherwise emits a
 // "Constant already defined" warning immediately before the redeclare fatal.
 if (!defined('AI_CORE_VERSION')) {
-    define('AI_CORE_VERSION', '1.0.10');
+    define('AI_CORE_VERSION', '1.0.11');
 }
 if (!defined('AI_CORE_PLUGIN_FILE')) {
     define('AI_CORE_PLUGIN_FILE', __FILE__);
@@ -40,7 +40,12 @@ if (!defined('AI_CORE_PLUGIN_FILE')) {
 if (version_compare(PHP_VERSION, '7.4', '<')) {
     add_action('admin_notices', function() {
         echo '<div class="notice notice-error"><p>';
-        echo '<strong>Opace AI Hub:</strong> This plugin requires PHP 7.4 or higher. You are running PHP ' . esc_html(PHP_VERSION);
+        echo '<strong>' . esc_html__('Opace AI Hub:', 'opace-ai-prompt-library-api-hub') . '</strong> ';
+        printf(
+            /* translators: %s: current PHP version. */
+            esc_html__('This plugin requires PHP 7.4 or higher. You are running PHP %s.', 'opace-ai-prompt-library-api-hub'),
+            esc_html(PHP_VERSION)
+        );
         echo '</p></div>';
     });
     return;
@@ -109,7 +114,8 @@ class AI_Core_Plugin {
         } else {
             add_action('admin_notices', function() {
                 echo '<div class="notice notice-error"><p>';
-                echo '<strong>Opace AI Hub:</strong> Core library not found. Please reinstall the plugin.';
+                echo '<strong>' . esc_html__('Opace AI Hub:', 'opace-ai-prompt-library-api-hub') . '</strong> ';
+                esc_html_e('Core library not found. Please reinstall the plugin.', 'opace-ai-prompt-library-api-hub');
                 echo '</p></div>';
             });
         }
@@ -125,6 +131,7 @@ class AI_Core_Plugin {
         require_once AI_CORE_PLUGIN_DIR . 'includes/class-ai-core-pricing.php';
         require_once AI_CORE_PLUGIN_DIR . 'includes/class-ai-core-model-defaults.php';
         require_once AI_CORE_PLUGIN_DIR . 'includes/class-ai-core-settings.php';
+        require_once AI_CORE_PLUGIN_DIR . 'includes/class-ai-core-wordpress-ai-client.php';
         require_once AI_CORE_PLUGIN_DIR . 'includes/class-ai-core-api.php';
         require_once AI_CORE_PLUGIN_DIR . 'includes/class-ai-core-validator.php';
         require_once AI_CORE_PLUGIN_DIR . 'includes/class-ai-core-stats.php';
@@ -150,6 +157,11 @@ class AI_Core_Plugin {
         
         // Plugin loaded hook
         add_action('plugins_loaded', array($this, 'plugins_loaded'));
+
+        // Core passes Connector credentials to registered AI providers at
+        // init priority 20. Run afterwards so a Connector always takes
+        // precedence and a Hub key is supplied only when WordPress has none.
+        add_action('init', array('AI_Core_WordPress_AI_Client', 'bridge_hub_credentials'), 30);
         
         // Admin init
         if (is_admin()) {
@@ -384,7 +396,7 @@ class AI_Core_Plugin {
 
         $provider_models_map = array();
         foreach ($provider_labels as $provider_key => $provider_label) {
-            if (!empty($settings[$provider_key . '_api_key'])) {
+            if (in_array($provider_key, $configured_providers, true)) {
                 $provider_models_map[$provider_key] = array_values(array_filter(
                     $api->get_available_models($provider_key),
                     static function ($model) use ($provider_key) {
@@ -411,6 +423,7 @@ class AI_Core_Plugin {
                 'validating' => __('Validating...', 'opace-ai-prompt-library-api-hub'),
                 'rememberToSave' => __('Remember to click Save to store this key.', 'opace-ai-prompt-library-api-hub'),
                 'confirmResetStats' => __('Are you sure you want to reset all usage statistics? This cannot be undone.', 'opace-ai-prompt-library-api-hub'),
+                'resetting' => __('Resetting...', 'opace-ai-prompt-library-api-hub'),
                 'pasteKeyToTest' => __('A key is saved for this provider. Paste it again to re-test it.', 'opace-ai-prompt-library-api-hub'),
                 'loadingModels' => __('Loading models...', 'opace-ai-prompt-library-api-hub'),
                 'noModels' => __('No models available', 'opace-ai-prompt-library-api-hub'),
@@ -432,8 +445,10 @@ class AI_Core_Plugin {
                 'modelsLoaded' => __('Models updated.', 'opace-ai-prompt-library-api-hub'),
                 'cleared' => __('API key cleared.', 'opace-ai-prompt-library-api-hub'),
                 'connected' => __('Connected', 'opace-ai-prompt-library-api-hub'),
-                'awaiting' => __('Awaiting API Key', 'opace-ai-prompt-library-api-hub'),
-                'addKeyFirst' => __('Add an API key to load models', 'opace-ai-prompt-library-api-hub'),
+                'connectedViaWordPress' => __('Connected via WordPress', 'opace-ai-prompt-library-api-hub'),
+                'connectedViaHub' => __('Connected via Hub', 'opace-ai-prompt-library-api-hub'),
+                'awaiting' => __('Awaiting Provider', 'opace-ai-prompt-library-api-hub'),
+                'addKeyFirst' => __('Configure a provider to load models', 'opace-ai-prompt-library-api-hub'),
                 'testSelectProvider' => __('Select a provider first', 'opace-ai-prompt-library-api-hub'),
                 'promptRequired' => __('Please enter a prompt.', 'opace-ai-prompt-library-api-hub'),
                 'providerRequired' => __('Please select a provider.', 'opace-ai-prompt-library-api-hub'),
@@ -441,11 +456,81 @@ class AI_Core_Plugin {
                 'runningPrompt' => __('Running prompt...', 'opace-ai-prompt-library-api-hub'),
                 'confirmClear' => __('Are you sure you want to clear this API key?', 'opace-ai-prompt-library-api-hub'),
                 'savedPlaceholder' => __('Saved key (hidden)', 'opace-ai-prompt-library-api-hub'),
+                'wordpressPlaceholder' => __('Managed by WordPress Connectors', 'opace-ai-prompt-library-api-hub'),
+                'wordpressManaged' => __('WordPress Connector is configured; no second key is needed.', 'opace-ai-prompt-library-api-hub'),
                 'clearKey' => __('Clear', 'opace-ai-prompt-library-api-hub'),
                 'testKey' => __('Test Key', 'opace-ai-prompt-library-api-hub'),
                 'noTuningParameters' => __('No adjustable parameters for this model.', 'opace-ai-prompt-library-api-hub'),
                 'selectModelFirst' => __('Select a model to view available settings.', 'opace-ai-prompt-library-api-hub'),
                 'toggleTheme' => __('Toggle dark mode', 'opace-ai-prompt-library-api-hub'),
+                'generatedImage' => __('Generated image', 'opace-ai-prompt-library-api-hub'),
+                'imageGeneration' => __('Image Generation', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: reason image generation is unavailable. */
+                'imageGenerationUnavailable' => __('Image Generation (%s)', 'opace-ai-prompt-library-api-hub'),
+                'invalidPluginFile' => __('Invalid plugin file.', 'opace-ai-prompt-library-api-hub'),
+                'activating' => __('Activating...', 'opace-ai-prompt-library-api-hub'),
+                'active' => __('Active', 'opace-ai-prompt-library-api-hub'),
+                'activationFailed' => __('Activation failed.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: activation error detail. */
+                'activationFailedDetail' => __('Activation failed: %s', 'opace-ai-prompt-library-api-hub'),
+                'configurationError' => __('Configuration error. Please refresh the page.', 'opace-ai-prompt-library-api-hub'),
+                'newGroup' => __('New Group', 'opace-ai-prompt-library-api-hub'),
+                'editGroup' => __('Edit Group', 'opace-ai-prompt-library-api-hub'),
+                'failedLoadGroup' => __('Failed to load group data.', 'opace-ai-prompt-library-api-hub'),
+                'networkLoadGroup' => __('Network error while loading the group.', 'opace-ai-prompt-library-api-hub'),
+                'enterGroupName' => __('Please enter a group name.', 'opace-ai-prompt-library-api-hub'),
+                'groupSaved' => __('Group saved successfully.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: error detail. */
+                'errorDetail' => __('Error: %s', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: error detail. */
+                'saveGroupError' => __('Error saving group: %s', 'opace-ai-prompt-library-api-hub'),
+                'confirmDeleteGroup' => __('Are you sure you want to delete this group? Prompts in this group will not be deleted.', 'opace-ai-prompt-library-api-hub'),
+                'groupDeleted' => __('Group deleted successfully.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: error detail. */
+                'deleteGroupError' => __('Error deleting group: %s', 'opace-ai-prompt-library-api-hub'),
+                'newPrompt' => __('New Prompt', 'opace-ai-prompt-library-api-hub'),
+                'editPrompt' => __('Edit Prompt', 'opace-ai-prompt-library-api-hub'),
+                'enterTitleContent' => __('Please enter a title and content.', 'opace-ai-prompt-library-api-hub'),
+                'promptSaved' => __('Prompt saved successfully.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: error detail. */
+                'savePromptError' => __('Error saving prompt: %s', 'opace-ai-prompt-library-api-hub'),
+                'noPromptsGroup' => __('No prompts in this group', 'opace-ai-prompt-library-api-hub'),
+                'dragPromptsHere' => __('Drag prompts here or click + to add', 'opace-ai-prompt-library-api-hub'),
+                'promptMoved' => __('Prompt moved successfully.', 'opace-ai-prompt-library-api-hub'),
+                'failedMovePrompt' => __('Failed to move prompt.', 'opace-ai-prompt-library-api-hub'),
+                'networkMovePrompt' => __('Network error while moving the prompt.', 'opace-ai-prompt-library-api-hub'),
+                'confirmDeletePrompt' => __('Are you sure you want to delete this prompt?', 'opace-ai-prompt-library-api-hub'),
+                'promptDeleted' => __('Prompt deleted successfully.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: error detail. */
+                'deletePromptError' => __('Error deleting prompt: %s', 'opace-ai-prompt-library-api-hub'),
+                'running' => __('Running...', 'opace-ai-prompt-library-api-hub'),
+                'run' => __('Run', 'opace-ai-prompt-library-api-hub'),
+                'promptNotFound' => __('Prompt not found.', 'opace-ai-prompt-library-api-hub'),
+                'failedLoadPrompt' => __('Failed to load prompt.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: network error detail. */
+                'networkErrorDetail' => __('Network error: %s', 'opace-ai-prompt-library-api-hub'),
+                'generatingResponse' => __('Generating response...', 'opace-ai-prompt-library-api-hub'),
+                'unknownError' => __('Unknown error', 'opace-ai-prompt-library-api-hub'),
+                'networkError' => __('Network error', 'opace-ai-prompt-library-api-hub'),
+                'enterPromptContent' => __('Please enter prompt content.', 'opace-ai-prompt-library-api-hub'),
+                'csvExportComplete' => __('CSV export completed.', 'opace-ai-prompt-library-api-hub'),
+                'promptsExported' => __('Prompts exported successfully!', 'opace-ai-prompt-library-api-hub'),
+                'exportError' => __('Error exporting prompts.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: network error detail. */
+                'networkExportError' => __('Network error exporting prompts: %s', 'opace-ai-prompt-library-api-hub'),
+                'selectFile' => __('Please select a file.', 'opace-ai-prompt-library-api-hub'),
+                'importSuccessful' => __('Import successful!', 'opace-ai-prompt-library-api-hub'),
+                'importError' => __('Error importing prompts.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: network error detail. */
+                'networkImportError' => __('Network error importing prompts: %s', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: JSON parsing error detail. */
+                'invalidJson' => __('Invalid JSON file: %s', 'opace-ai-prompt-library-api-hub'),
+                'confirmDeleteAll' => __('Are you sure you want to delete ALL prompts and groups? This action cannot be undone!', 'opace-ai-prompt-library-api-hub'),
+                'confirmDeleteAllAgain' => __('This will permanently delete everything in your Prompt Library. Are you absolutely sure?', 'opace-ai-prompt-library-api-hub'),
+                'allPromptsDeleted' => __('All prompts deleted successfully.', 'opace-ai-prompt-library-api-hub'),
+                'deleteAllError' => __('Error deleting prompts.', 'opace-ai-prompt-library-api-hub'),
+                /* translators: %s: network error detail. */
+                'networkDeleteAllError' => __('Network error deleting prompts: %s', 'opace-ai-prompt-library-api-hub'),
             ),
             'providers' => array(
                 'configured' => $configured_providers,
@@ -455,6 +540,10 @@ class AI_Core_Plugin {
                 'selectedModels' => $provider_selected_models,
                 'options' => $provider_options,
                 'meta' => $provider_metadata,
+                'sources' => array_combine(
+                    array_keys($provider_labels),
+                    array_map(array($api, 'get_provider_source'), array_keys($provider_labels))
+                ),
             ),
         );
 

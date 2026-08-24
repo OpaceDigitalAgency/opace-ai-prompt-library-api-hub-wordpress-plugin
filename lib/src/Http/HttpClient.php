@@ -6,7 +6,7 @@
  * Handles common functionality like headers, timeouts, and error handling
  * 
  * @package AI_Core
- * @version 1.0.10
+ * @version 1.0.11
  */
 
 namespace AICore\Http;
@@ -223,7 +223,7 @@ class HttpClient {
      * @return string Version string
      */
     private static function getVersion(): string {
-        return defined('AI_CORE_VERSION') ? AI_CORE_VERSION : '1.0.10';
+        return defined('AI_CORE_VERSION') ? AI_CORE_VERSION : '1.0.11';
     }
     
     /**

@@ -251,6 +251,12 @@ Uninstall** before deleting the plugin. Opace AI Hub does not delete another plu
 Future compatible plugins can use the same public PHP API. Roadmap names describe direction, not a
 promise of availability.
 
+## Video walkthrough
+
+[![Watch the Opace AI Hub walkthrough](https://img.youtube.com/vi/nn3tV6UqJT4/maxresdefault.jpg)](https://www.youtube.com/watch?v=nn3tV6UqJT4)
+
+[Watch Opace AI Hub on YouTube](https://www.youtube.com/watch?v=nn3tV6UqJT4) — provider setup, live model discovery, the Prompt Library, usage statistics and companion-plugin integration.
+
 ## Screenshots
 
 | Provider settings | Dashboard |

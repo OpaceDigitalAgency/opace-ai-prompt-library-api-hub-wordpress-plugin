@@ -230,6 +230,12 @@ Opace AI Hub keeps its data by default because other plugins may depend on it. T
 credentials, settings, prompt tables, statistics and caches, turn off Persist Settings on Uninstall
 before deleting the plugin. Opace AI Hub does not delete another plugin's data.
 
+== Video demonstration ==
+
+Watch the current Opace AI Hub walkthrough, covering provider setup, live model discovery, the Prompt Library, usage statistics and companion-plugin integration.
+
+https://www.youtube.com/watch?v=nn3tV6UqJT4
+
 == Screenshots ==
 
 1. Settings - test provider credentials, refresh models, choose defaults and control retained data.

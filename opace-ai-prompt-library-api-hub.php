@@ -3,7 +3,7 @@
  * Plugin Name: Opace AI Prompt Library & API Integration Hub for OpenAI, Claude & Gemini
  * Plugin URI: https://opace.agency/services/web-design/wordpress-development/
  * Description: Connect WordPress plugins to OpenAI, Anthropic Claude and Google Gemini with shared credentials, live models, prompts and usage records.
- * Version: 1.0.12
+ * Version: 1.0.13
  * Author: Opace Digital Agency
  * Author URI: https://opace.agency
  * License: GPLv2 or later
@@ -15,7 +15,7 @@
  * Tags: ai, openai, claude, gemini, api, integration, artificial intelligence
  *
  * @package AI_Core
- * @version 1.0.12
+ * @version 1.0.13
  */
 
 // Prevent direct access
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
 // already be loaded when Opace AI Hub is activated, which otherwise emits a
 // "Constant already defined" warning immediately before the redeclare fatal.
 if (!defined('AI_CORE_VERSION')) {
-    define('AI_CORE_VERSION', '1.0.12');
+    define('AI_CORE_VERSION', '1.0.13');
 }
 if (!defined('AI_CORE_PLUGIN_FILE')) {
     define('AI_CORE_PLUGIN_FILE', __FILE__);
@@ -468,7 +468,7 @@ class AI_Core_Plugin {
                 /* translators: %s: reason image generation is unavailable. */
                 'imageGenerationUnavailable' => __('Image Generation (%s)', 'opace-ai-prompt-library-api-hub'),
                 'invalidAddonAction' => __('Invalid add-on action.', 'opace-ai-prompt-library-api-hub'),
-                'installingAddon' => __('Installing and activating...', 'opace-ai-prompt-library-api-hub'),
+                'installingAddon' => __('Installing...', 'opace-ai-prompt-library-api-hub'),
                 'activating' => __('Activating...', 'opace-ai-prompt-library-api-hub'),
                 'active' => __('Active', 'opace-ai-prompt-library-api-hub'),
                 'addonReady' => __('Add-on ready.', 'opace-ai-prompt-library-api-hub'),

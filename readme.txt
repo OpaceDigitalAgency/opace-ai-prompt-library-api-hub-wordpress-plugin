@@ -1,42 +1,44 @@
 === Opace AI Prompt Library & API Integration Hub for OpenAI, Claude & Gemini ===
 Contributors: opacewebdesign
-Tags: artificial intelligence, openai, claude, gemini, automation
+Tags: AI, Prompt Engineering, Claude, Gemini, OpenAI
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.12
+Stable tag: 1.0.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Manage OpenAI, Anthropic and Gemini credentials once, then share models, prompts and usage data across compatible WordPress plugins.
+AI prompt engineering hub for WordPress: manage OpenAI, Claude and Gemini API keys, models, reusable prompts, pricing and usage once.
 
 == Description ==
 
-**Compatibility:** Version 1.0.12 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
+**Compatibility:** Version 1.0.13 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
 
 Opace AI Hub is independently developed by Opace Digital Agency and is not affiliated with, endorsed by or sponsored by OpenAI, Anthropic or Google.
 
-Opace AI Hub gives compatible WordPress plugins one shared connection to AI providers. Add an OpenAI,
-Anthropic Claude or Google Gemini key once, test it, and let compatible plugins use the same saved
-configuration.
+Opace AI Hub gives compatible WordPress plugins one shared connection to AI providers. Add an OpenAI, Anthropic Claude or Google Gemini key once, test it, and let compatible plugins use the same saved configuration.
 
-Opace AI Hub is an integration hub, not a content generator. A plugin such as AI-Scribe sends generation
-requests through it.
+Opace AI Hub is independently installable infrastructure, not a content generator. AI-Scribe is a separate companion plugin that sends content-generation requests through it.
+
+**[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
+
+**[AI-Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
+
+**[Opace AI Hub on GitHub](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)**
 
 = Why Opace AI Hub was built =
 
-As separate WordPress plugins added AI features, each one risked duplicating provider settings, model
-lists, request formats, prompt storage and cost calculations. Opace AI Hub moves that security-sensitive
-infrastructure into one maintained plugin. Site administrators get one place to rotate keys, choose
-models and review usage, while compatible plugins stay focused on their own workflows.
+As separate WordPress plugins added AI features, each one risked duplicating provider settings, model lists, request formats, prompt storage and cost calculations. Opace AI Hub moves that security-sensitive infrastructure into one maintained plugin. Site administrators get one place to rotate keys, choose models and review usage, while compatible plugins stay focused on their own workflows.
 
 = How AI-Scribe uses Opace AI Hub =
 
-AI-Scribe owns article planning, writing, SEO metadata, editorial review and WordPress publishing.
-Opace AI Hub supplies its encrypted credentials, provider and model selection, normalised generation
-requests, reusable prompts, model capabilities and usage records.
+AI-Scribe owns article planning, writing, SEO metadata, editorial review and WordPress publishing. Opace AI Hub supplies its encrypted credentials, provider and model selection, normalised generation requests, reusable prompts, model capabilities and usage records.
 
-[AI-Scribe project](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)
+**[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
+
+**[AI-Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
+
+**[Opace AI Hub on GitHub](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)**
 
 = What Opace AI Hub provides =
 
@@ -54,15 +56,11 @@ requests, reusable prompts, model capabilities and usage records.
 * **Anthropic Claude** - text generation through the Messages API; Anthropic does not provide image generation
 * **Google Gemini** - text and image generation through the Gemini API
 
-Model lists are fetched using your key. Providers may make different models available to different
-accounts, so two sites can show different choices.
+Model lists are fetched using your key. Providers may make different models available to different accounts, so two sites can show different choices.
 
 = Current providers and live model catalogue =
 
-**Live catalogue snapshot: 23 August 2026 at 13:03 BST (UTC+1).** The Hub refreshed configured provider
-accounts at that time and received 132 OpenAI, 10 Anthropic Claude and 50 Google Gemini identifiers.
-Provider access varies by account, region and rollout; Settings always uses the current list returned for
-your own key. The built-in registry is only a fallback and metadata source when live discovery is unavailable.
+**Live catalogue snapshot: 23 August 2026 at 13:03 BST (UTC+1).** The Hub refreshed configured provider accounts at that time and received 132 OpenAI, 10 Anthropic Claude and 50 Google Gemini identifiers. Provider access varies by account, region and rollout; Settings always uses the current list returned for your own key. The built-in registry is only a fallback and metadata source when live discovery is unavailable.
 
 **Multimodal text models selectable in the Hub**
 
@@ -86,9 +84,7 @@ These generate text and accept visual input. Image input does not make them dedi
 
 **Live specialist models catalogued, not currently invoked**
 
-The Hub retains these live identifiers for capability-aware add-ons, but its present public helpers only
-execute text, structured-output and image requests. Listing a specialist model here does not claim a
-working Hub request path for that category.
+The Hub retains these live identifiers for capability-aware add-ons, but its present public helpers only execute text, structured-output and image requests. Listing a specialist model here does not claim a working Hub request path for that category.
 
 * **OpenAI audio, speech and realtime (31):** `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-03-20`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-mini-tts`, `gpt-4o-mini-tts-2025-03-20`, `gpt-4o-mini-tts-2025-12-15`, `gpt-realtime-2.1`, `gpt-realtime-2.1-mini`, `gpt-realtime-2`, `gpt-audio-1.5`, `gpt-realtime-1.5`, `gpt-transcribe`, `gpt-audio`, `gpt-audio-2025-08-28`, `gpt-audio-mini`, `gpt-audio-mini-2025-10-06`, `gpt-audio-mini-2025-12-15`, `gpt-live-transcribe`, `gpt-realtime`, `gpt-realtime-2025-08-28`, `gpt-realtime-mini`, `gpt-realtime-mini-2025-12-15`, `gpt-realtime-translate`, `gpt-realtime-whisper`, `whisper-1`, `tts-1`, `tts-1-1106`, `tts-1-hd`, `tts-1-hd-1106`
 * **Gemini audio, music and live (10):** `gemini-3.5-live-translate-preview`, `gemini-3.1-flash-live-preview`, `gemini-3.1-flash-tts-preview`, `gemini-2.5-pro-preview-tts`, `gemini-2.5-flash-native-audio-latest`, `gemini-2.5-flash-native-audio-preview-09-2025`, `gemini-2.5-flash-native-audio-preview-12-2025`, `gemini-2.5-flash-preview-tts`, `lyria-3-pro-preview`, `lyria-3-clip-preview`
@@ -110,80 +106,61 @@ The maintained offline fallbacks are currently `gpt-5.6-terra`, `claude-opus-5`,
 
 = Compatible plugins =
 
-* **AI-Scribe 3.0 or later** - AI content creation and SEO optimisation. From Hub 1.0.12, the Add-ons screen can install and activate the public AI-Scribe package after one explicit administrator action.
+* **AI-Scribe 3.0 or later** - AI content creation and SEO optimisation. From Hub 1.0.13, the Add-ons screen installs the public AI-Scribe package after explicit consent, then waits for the administrator to activate it from the same card.
 
 Developers can also use Opace AI Hub's PHP API in their own plugins.
 
 = What comes next =
 
-AI-Imagen is a planned image-generation workflow intended to use Opace AI Hub. It is not included in this
-release and has no announced release date. Other compatible plugins can use the same PHP API as the
-project grows.
+AI-Imagen is a planned image-generation workflow intended to use Opace AI Hub. It is not included in this release and has no announced release date. Other compatible plugins can use the same PHP API as the project grows.
 
 = Security and privacy =
 
-Provider keys are stored in the `ai_core_settings` option on your WordPress site. They are encrypted
-at rest with AES-256-CBC, using a random initialisation vector per value and a key derived from the
-site's WordPress salts. If encryption fails, Opace AI Hub does not save the key as plain text.
+Provider keys are stored in the `ai_core_settings` option on your WordPress site. They are encrypted at rest with AES-256-CBC, using a random initialisation vector per value and a key derived from the site's WordPress salts. If encryption fails, Opace AI Hub does not save the key as plain text.
 
-Rotating the salts in `wp-config.php` makes saved keys unreadable. Re-enter them after a salt
-rotation.
+Rotating the salts in `wp-config.php` makes saved keys unreadable. Re-enter them after a salt rotation.
 
-Opace AI Hub does not include analytics or user tracking. Generation data is sent only when an
-administrator tests a provider or a compatible plugin requests a generation.
+Opace AI Hub does not include analytics or user tracking. Generation data is sent only when an administrator tests a provider or a compatible plugin requests a generation.
 
 == External services ==
 
-Opace AI Hub connects to the following third-party services. Each provider bills you directly under the
-terms of your account.
+Opace AI Hub connects to the following third-party services. Each provider bills you directly under the terms of your account.
 
 **OpenAI**
 
-Used when an administrator tests an OpenAI key or refreshes its model list, and when OpenAI is chosen
-for a generation. Opace AI Hub sends the OpenAI API key, requested model, request settings and prompt or
-image instructions supplied by the calling plugin. Requests go to [api.openai.com](https://api.openai.com/).
+Used when an administrator tests an OpenAI key or refreshes its model list, and when OpenAI is chosen for a generation. Opace AI Hub sends the OpenAI API key, requested model, request settings and prompt or image instructions supplied by the calling plugin. Requests go to [api.openai.com](https://api.openai.com/).
 
-[OpenAI Terms of Use](https://openai.com/policies/terms-of-use)
-[OpenAI Privacy Policy](https://openai.com/policies/privacy-policy)
+* [OpenAI Terms of Use](https://openai.com/policies/terms-of-use)
+* [OpenAI Privacy Policy](https://openai.com/policies/privacy-policy)
 
 **Anthropic Claude**
 
-Used when an administrator tests an Anthropic key or refreshes its model list, and when Anthropic is
-chosen for a generation. Opace AI Hub sends the Anthropic API key, requested model, request settings and
-prompt supplied by the calling plugin. Requests go to [api.anthropic.com](https://api.anthropic.com/).
+Used when an administrator tests an Anthropic key or refreshes its model list, and when Anthropic is chosen for a generation. Opace AI Hub sends the Anthropic API key, requested model, request settings and prompt supplied by the calling plugin. Requests go to [api.anthropic.com](https://api.anthropic.com/).
 
-[Anthropic Consumer Terms](https://www.anthropic.com/legal/consumer-terms)
-[Anthropic Privacy Policy](https://www.anthropic.com/legal/privacy)
+* [Anthropic Consumer Terms](https://www.anthropic.com/legal/consumer-terms)
+* [Anthropic Privacy Policy](https://www.anthropic.com/legal/privacy)
 
 **Google Gemini**
 
-Used when an administrator tests a Gemini key or refreshes its model list, and when Gemini is chosen
-for a generation. Opace AI Hub sends the Gemini API key, requested model, request settings and prompt or
-image instructions supplied by the calling plugin. Requests go to
-[generativelanguage.googleapis.com](https://generativelanguage.googleapis.com/).
+Used when an administrator tests a Gemini key or refreshes its model list, and when Gemini is chosen for a generation. Opace AI Hub sends the Gemini API key, requested model, request settings and prompt or image instructions supplied by the calling plugin. Requests go to [generativelanguage.googleapis.com](https://generativelanguage.googleapis.com/).
 
-[Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms)
-[Google Privacy Policy](https://policies.google.com/privacy)
+* [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms)
+* [Google Privacy Policy](https://policies.google.com/privacy)
 
 **LiteLLM public model catalogue**
 
-Used when Opace AI Hub needs current published pricing for a discovered model and when an administrator
-selects Refresh Model Pricing. Opace AI Hub sends only the provider name and model identifier to
-[api.litellm.ai](https://api.litellm.ai/). API keys, prompts, generated content, site details and usage totals are not sent.
-Successful results are cached for 12 hours. Opace AI Hub uses its bundled catalogue when no current result
-is available and shows Cost unavailable rather than treating an unknown price as zero.
+Used when Opace AI Hub needs current published pricing for a discovered model and when an administrator selects Refresh Model Pricing. Opace AI Hub sends only the provider name and model identifier to [api.litellm.ai](https://api.litellm.ai/). API keys, prompts, generated content, site details and usage totals are not sent. Successful results are cached for 12 hours. Opace AI Hub uses its bundled catalogue when no current result is available and shows Cost unavailable rather than treating an unknown price as zero.
 
-[LiteLLM catalogue and licence](https://github.com/BerriAI/litellm)
-[LiteLLM privacy and data security](https://docs.litellm.ai/docs/data_security)
+* [LiteLLM catalogue and licence](https://github.com/BerriAI/litellm)
+* [LiteLLM privacy and data security](https://docs.litellm.ai/docs/data_security)
 
 **WordPress.org plugin directory**
 
-Used only when an administrator chooses **Install and activate AI-Scribe** on the Add-ons screen. Opace AI Hub asks the WordPress plugin API for AI-Scribe's public package and passes its download URL to WordPress's core installer. WordPress.org receives the normal plugin-information and package-download requests; Opace AI Hub does not send API keys, prompts, generated content, site settings or usage records.
+Used only when an administrator chooses **Install AI-Scribe** on the Add-ons screen. Opace AI Hub asks the WordPress plugin API for AI-Scribe's public package and passes its download URL to WordPress's core installer. WordPress.org receives the normal plugin-information and package-download requests; Opace AI Hub does not send API keys, prompts, generated content, site settings or usage records. Installation stops for the administrator to choose **Activate AI-Scribe and continue**.
 
-[AI-Scribe on WordPress.org](https://wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)
+**[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
 
-Cost figures shown by Opace AI Hub are published-rate estimates. Free tiers, cached-token rates, batch
-pricing, negotiated rates and provider billing changes can make an invoice differ from the estimate.
+Cost figures shown by Opace AI Hub are published-rate estimates. Free tiers, cached-token rates, batch pricing, negotiated rates and provider billing changes can make an invoice differ from the estimate.
 
 == Installation ==
 
@@ -199,44 +176,37 @@ Compatible plugins can then use the shared configuration.
 
 = Does Opace AI Hub include an API key or free AI usage? =
 
-No. Obtain a key directly from OpenAI, Anthropic or Google. The provider charges your account for
-usage under its own pricing and terms.
+No. Obtain a key directly from OpenAI, Anthropic or Google. The provider charges your account for usage under its own pricing and terms.
 
 = Does Opace AI Hub generate content by itself? =
 
-No. It manages provider connections, models, prompts and usage data. Install a compatible plugin such
-as AI-Scribe to generate content.
+No. It manages provider connections, models, prompts and usage data. Install a compatible plugin such as AI-Scribe to generate content.
 
 = How does the WordPress core AI Client integration work? =
 
-The core AI Client (WordPress 7.0+) can use multiple configured providers, discover suitable models and
-generate text or images. Version 1.0.11 uses a Connector credential without copying it into Hub storage.
-If the key is stored in the Hub, the Hub supplies its decrypted value to the matching WordPress provider
-for that request only, so external plugins using the core client can use it too. The official OpenAI,
-Anthropic or Google provider plugin must be active. When both stores contain a key, WordPress Connectors
-takes precedence. WordPress 6.5 to 6.9 continues to use the Hub's direct provider integration.
+The core AI Client (WordPress 7.0+) can use multiple configured providers, discover suitable models and generate text or images. Version 1.0.11 uses a Connector credential without copying it into Hub storage. If the key is stored in the Hub, the Hub supplies its decrypted value to the matching WordPress provider for that request only, so external plugins using the core client can use it too. The official OpenAI, Anthropic or Google provider plugin must be active. When both stores contain a key, WordPress Connectors takes precedence. WordPress 6.5 to 6.9 continues to use the Hub's direct provider integration.
 
 = Can I use more than one provider? =
 
-Yes. You can save keys for multiple supported providers. A compatible plugin can use one provider for
-text and another for images.
+Yes. You can save keys for multiple supported providers. A compatible plugin can use one provider for text and another for images.
 
 = Why is a model missing? =
 
-Opace AI Hub asks each provider which models your key can access. Availability can differ by account,
-region and provider rollout.
+Opace AI Hub asks each provider which models your key can access. Availability can differ by account, region and provider rollout.
 
 = Are API keys visible to browser visitors? =
 
-No. Keys stored by Opace AI Hub are server-side, encrypted at rest, and are not printed into public pages
-or normal Hub responses. WordPress Connector credentials remain under WordPress core's storage rules and
-are not copied into the Hub. Other trusted server-side plugins can use the Hub or WordPress AI Client APIs.
+No. Keys stored by Opace AI Hub are server-side, encrypted at rest, and are not printed into public pages or normal Hub responses. WordPress Connector credentials remain under WordPress core's storage rules and are not copied into the Hub. Other trusted server-side plugins can use the Hub or WordPress AI Client APIs.
 
 = What happens when I uninstall Opace AI Hub? =
 
-Opace AI Hub keeps its data by default because other plugins may depend on it. To remove all Opace AI Hub-owned
-credentials, settings, prompt tables, statistics and caches, turn off Persist Settings on Uninstall
-before deleting the plugin. Opace AI Hub does not delete another plugin's data.
+Opace AI Hub keeps its data by default because other plugins may depend on it. To remove all Opace AI Hub-owned credentials, settings, prompt tables, statistics and caches, turn off Persist Settings on Uninstall before deleting the plugin. Opace AI Hub does not delete another plugin's data.
+
+= Where can I get support or report a development issue? =
+
+For user help, use the [WordPress.org support forum](https://wordpress.org/support/plugin/opace-ai-prompt-library-api-hub/). Developers can review the source or report a reproducible code issue through the [Opace AI Hub GitHub repository](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin) and its [issue tracker](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin/issues).
+
+Opace AI Hub is free, open-source software supplied on a best-effort basis. Support response times and feature requests are not guaranteed. Reviews are welcome but always optional and are never required for support or functionality. The Hub does not guarantee search rankings, generated-content outcomes, provider availability or third-party pricing.
 
 == Video demonstration ==
 
@@ -254,14 +224,21 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 
 == Opace and related links ==
 
-* [AI-Scribe](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)
-* [Opace AI Hub source and full changelog](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)
+* **[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
+* **[AI-Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
+* **[Opace AI Hub on GitHub](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)**
 * [Opace Digital Agency](https://opace.agency/)
 * [Web design and development](https://opace.agency/services/web-design/)
 * [WordPress development](https://opace.agency/services/web-design/wordpress-development/)
 * [AI SEO services](https://opace.agency/services/ai-seo/)
 
 == Changelog ==
+
+= 1.0.13 =
+
+* Split AI-Scribe installation and activation into two explicit actions in the same Add-ons card.
+* Kept installation progress, success and errors inside the card with no unrelated admin notice.
+* Improved WordPress.org paragraph rendering, companion links, focused tags and human-first search copy.
 
 = 1.0.12 =
 
@@ -348,6 +325,10 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 * Consolidated all completed pre-release work as the first public 1.0 release.
 
 == Upgrade Notice ==
+
+= 1.0.13 =
+
+Install AI-Scribe from the Hub Add-ons card, then activate it with a second explicit administrator action.
 
 = 1.0.12 =
 

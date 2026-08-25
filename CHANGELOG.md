@@ -1,5 +1,13 @@
 # Opace AI Hub changelog
 
+## 1.0.13 — 25 August 2026
+
+- install AI-Scribe from WordPress.org only after explicit administrator consent
+- stop after installation and expose a separate Activate and continue action in the same card
+- retain in-card progress, errors and successful navigation without unrelated admin notices
+- improve WordPress.org paragraph rendering, companion links, five focused tags and human-first non-brand search copy
+- document user support, developer issues, best-effort open-source support and outcome limits
+
 ## 1.0.12 — 24 August 2026
 
 - install and activate AI-Scribe from its WordPress.org package after one explicit administrator action

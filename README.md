@@ -7,12 +7,14 @@
 **Configure AI providers once, then share their models, prompts and usage data across compatible WordPress plugins.**
 
 <p align="center">
-  <img alt="Opace AI Hub version 1.0.12" src="https://img.shields.io/badge/version-1.0.12-0A7DBB">
+  <img alt="Opace AI Hub version 1.0.13" src="https://img.shields.io/badge/version-1.0.13-0A7DBB">
   <img alt="Requires WordPress 6.5 or newer" src="https://img.shields.io/badge/WordPress-6.5%2B-21759B">
   <img alt="Tested up to WordPress 7.1" src="https://img.shields.io/badge/tested%20up%20to-WordPress%207.1-21759B">
   <img alt="Requires PHP 7.4 or newer" src="https://img.shields.io/badge/PHP-7.4%2B-777BB4">
   <img alt="GPL 2.0 or later" src="https://img.shields.io/badge/licence-GPL--2.0--or--later-4C1">
 </p>
+
+**[Install AI-Scribe from WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)** · **[View AI-Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)** · **[View Opace AI Hub on GitHub](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)**
 
 <p align="center">
   <a href="https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin/releases/latest">Latest release</a>
@@ -48,6 +50,8 @@ maintained and tested once, while each compatible plugin remains focused on its 
 site administrators one place to rotate keys, choose models and understand usage.
 
 ## How AI Scribe uses Opace AI Hub
+
+**[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)** · **[AI-Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)** · **[Opace AI Hub on GitHub](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)**
 
 [AI Scribe](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator) is the first
 content workflow built around Opace AI Hub. AI Scribe owns article planning, writing, SEO metadata,
@@ -277,7 +281,7 @@ Google AI provider plugin; WordPress core supplies the client and Connector UI, 
 
 ## Release history
 
-Version 1.0.12 adds a consent-led, state-aware WordPress.org installer for AI-Scribe and corrects action-icon alignment across Hub screens. Version 1.0.11 adds two-way runtime credential and model integration with the WordPress 7.0 AI Client and Connectors APIs without duplicating stored keys, and makes the complete reachable admin interface translation-ready. Version 1.0.10 documents the complete timestamped live inventory and distinguishes selectable generation models from catalogued specialist models. Version 1.0.9 makes the WordPress.org links clickable. Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved Opace AI Hub logo, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
+Version 1.0.13 separates consented AI-Scribe installation from the administrator's explicit activation action while keeping both steps in the same Add-ons card. Version 1.0.12 adds a consent-led, state-aware WordPress.org installer for AI-Scribe and corrects action-icon alignment across Hub screens. Version 1.0.11 adds two-way runtime credential and model integration with the WordPress 7.0 AI Client and Connectors APIs without duplicating stored keys, and makes the complete reachable admin interface translation-ready. Version 1.0.10 documents the complete timestamped live inventory and distinguishes selectable generation models from catalogued specialist models. Version 1.0.9 makes the WordPress.org links clickable. Version 1.0.8 is the WordPress.org approval release, keeps `Tested up to` in the supported listing readme rather than the main PHP header, and adds a Plugins-page review link. Version 1.0.7 uses the complete approved installed-plugin branding, a white WordPress sidebar symbol, a tidy notice layout, an explicit provider non-affiliation statement and documented Plugin Check exceptions for the Hub's intended provider-integration role. Version 1.0.6 adds the approved installed-plugin branding and small icon variants. Version 1.0.5
 classifies the complete provider catalogue while keeping non-prose products out of
 text-model selectors. Version 1.0.4 retries
 transient provider connection failures once. Version 1.0.3 synchronises every
@@ -293,7 +297,7 @@ bin/build-zip.sh
 ```
 
 The build script checks that the plugin header, `AI_CORE_VERSION` and the WordPress.org stable tag
-match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.12.zip`, makes the installed directory
+match. It creates `dist/opace-ai-prompt-library-api-hub-1.0.13.zip`, makes the installed directory
 slug `opace-ai-prompt-library-api-hub`, and excludes development files and unshipped add-ons.
 
 ## Licence

@@ -314,7 +314,7 @@ class AI_Core_Addons {
                             <?php elseif ($addon['installed']): ?>
                                 <button type="button" class="button button-primary ai-core-addon-action" data-action="activate" data-slug="<?php echo esc_attr($addon['slug']); ?>">
                                     <span class="dashicons dashicons-update"></span>
-                                    <?php esc_html_e('Activate AI-Scribe', 'opace-ai-prompt-library-api-hub'); ?>
+                                    <?php esc_html_e('Activate AI-Scribe and continue', 'opace-ai-prompt-library-api-hub'); ?>
                                 </button>
                             <?php elseif (isset($addon['available']) && !$addon['available']): ?>
                                 <span class="button button-disabled" aria-disabled="true">
@@ -325,7 +325,7 @@ class AI_Core_Addons {
                             <?php elseif (!empty($addon['wordpress_org'])): ?>
                                 <button type="button" class="button button-primary ai-core-addon-action" data-action="install" data-slug="<?php echo esc_attr($addon['slug']); ?>">
                                     <span class="dashicons dashicons-download"></span>
-                                    <?php esc_html_e('Install and activate AI-Scribe', 'opace-ai-prompt-library-api-hub'); ?>
+                                    <?php esc_html_e('Install AI-Scribe', 'opace-ai-prompt-library-api-hub'); ?>
                                 </button>
                                 <p class="addon-unavailable-reason">
                                     <a href="<?php echo esc_url($addon['url']); ?>" target="_blank" rel="noopener noreferrer">
@@ -421,15 +421,15 @@ if (function_exists('ai_core')) {
     }
 
     /**
-     * Install and activate a public add-on from WordPress.org.
+     * Install a public add-on from WordPress.org.
      *
      * @return void
      */
     public function ajax_install_addon() {
         check_ajax_referer('ai_core_admin', 'nonce');
 
-        if (!current_user_can('install_plugins') || !current_user_can('activate_plugins')) {
-            wp_send_json_error(array('message' => __('You do not have permission to install and activate plugins.', 'opace-ai-prompt-library-api-hub')), 403);
+        if (!current_user_can('install_plugins')) {
+            wp_send_json_error(array('message' => __('You do not have permission to install plugins.', 'opace-ai-prompt-library-api-hub')), 403);
         }
 
         $slug = isset($_POST['slug']) ? sanitize_key(wp_unslash($_POST['slug'])) : '';
@@ -482,15 +482,10 @@ if (function_exists('ai_core')) {
             wp_send_json_error(array('message' => __('AI-Scribe installed, but its plugin file could not be found.', 'opace-ai-prompt-library-api-hub')), 500);
         }
 
-        $activated = activate_plugin($installed_addon['plugin_file'], '', is_multisite() && is_network_admin());
-
-        if (is_wp_error($activated)) {
-            wp_send_json_error(array('message' => $activated->get_error_message()), 500);
-        }
-
         wp_send_json_success(array(
-            'message' => __('AI-Scribe installed and activated successfully.', 'opace-ai-prompt-library-api-hub'),
-            'redirect' => !empty($installed_addon['open_url']) ? $installed_addon['open_url'] : admin_url('admin.php?page=ai-core-addons'),
+            'message' => __('AI-Scribe installed. Activate it to finish setup.', 'opace-ai-prompt-library-api-hub'),
+            'next_action' => 'activate',
+            'button_label' => __('Activate AI-Scribe and continue', 'opace-ai-prompt-library-api-hub'),
         ));
     }
 

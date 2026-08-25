@@ -1186,7 +1186,7 @@
             $btn.prop('disabled', true);
             const originalHtml = $btn.html();
             const progressText = requestedAction === 'install'
-                ? translated('installingAddon', 'Installing and activating...')
+                ? translated('installingAddon', 'Installing...')
                 : translated('activating', 'Activating...');
             $btn.html('<span class="dashicons dashicons-update spin"></span> ' + progressText);
             $status.removeClass('is-error is-success').text(progressText);
@@ -1202,6 +1202,14 @@
                 success: function(response) {
                     if (response.success) {
                         $status.addClass('is-success').text(response.data.message || translated('addonReady', 'Add-on ready.'));
+                        if (response.data.next_action) {
+                            $btn.attr('data-action', response.data.next_action).data('action', response.data.next_action);
+                            $btn.empty()
+                                .append($('<span></span>').addClass('dashicons dashicons-update'))
+                                .append(document.createTextNode(' ' + response.data.button_label));
+                            $btn.prop('disabled', false).trigger('focus');
+                            return;
+                        }
                         window.location.assign(response.data.redirect || window.location.href);
                     } else {
                         $btn.html(originalHtml).prop('disabled', false);

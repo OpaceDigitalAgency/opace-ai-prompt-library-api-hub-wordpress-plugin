@@ -5,7 +5,7 @@
  * Handles admin interface and menu pages
  * 
  * @package AI_Core
- * @version 1.0.14
+ * @version 1.0.15
  */
 
 // Prevent direct access
@@ -52,6 +52,74 @@ class AI_Core_Admin {
                  alt="" aria-hidden="true" width="72" height="72">
             <h1><?php echo esc_html($title); ?></h1>
         </div>
+        <?php
+    }
+
+    /**
+     * Render the shared Opace footer used on every Hub admin screen.
+     *
+     * @return void
+     */
+    public static function render_opace_footer() {
+        ?>
+        <div class="wrap ai-core-opace-footer-wrap">
+            <section class="ai-core-opace-footer" aria-labelledby="ai-core-more-from-opace">
+                <p class="ai-core-opace-footer__byline">
+                    <?php
+                    printf(
+                        /* translators: %s: Link to the Opace website. */
+                        wp_kses_post(__('Built and supported by %s, a UK digital agency.', 'opace-ai-prompt-library-api-hub')),
+                        '<a href="' . esc_url('https://opace.agency/') . '" target="_blank" rel="noopener noreferrer">' . esc_html__('Opace', 'opace-ai-prompt-library-api-hub') . '</a>'
+                    );
+                    ?>
+                </p>
+                <h2 id="ai-core-more-from-opace"><?php esc_html_e('More from Opace', 'opace-ai-prompt-library-api-hub'); ?></h2>
+                <ul class="ai-core-opace-footer__links">
+                    <?php
+                    self::render_opace_footer_link(
+                        'https://wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/',
+                        __('AI-Scribe — free WordPress plugin', 'opace-ai-prompt-library-api-hub'),
+                        'dashicons-wordpress'
+                    );
+                    self::render_opace_footer_link(
+                        'https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin',
+                        __('Opace AI Hub source code — GitHub', 'opace-ai-prompt-library-api-hub'),
+                        'dashicons-editor-code'
+                    );
+                    self::render_opace_footer_link(
+                        'https://chatgpt.com/g/g-ZTkBnCIbA-gpt-seo-article-creator-writer-ai-scribe',
+                        __('AI-Scribe Custom GPT — ChatGPT', 'opace-ai-prompt-library-api-hub'),
+                        'dashicons-format-chat'
+                    );
+                    self::render_opace_footer_link(
+                        'https://opace.agency/services/web-design/',
+                        __('Custom web design & WordPress support', 'opace-ai-prompt-library-api-hub'),
+                        'dashicons-admin-site-alt3'
+                    );
+                    ?>
+                </ul>
+            </section>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render one external footer destination.
+     *
+     * @param string $url  Destination URL.
+     * @param string $text Visible link text.
+     * @param string $icon Dashicon class.
+     * @return void
+     */
+    private static function render_opace_footer_link($url, $text, $icon) {
+        ?>
+        <li>
+            <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener noreferrer">
+                <span class="dashicons <?php echo esc_attr($icon); ?>" aria-hidden="true"></span>
+                <span><?php echo esc_html($text); ?></span>
+                <span class="dashicons dashicons-external" aria-hidden="true"></span>
+            </a>
+        </li>
         <?php
     }
     
@@ -276,6 +344,7 @@ class AI_Core_Admin {
             </div>
         </div>
         <?php
+        self::render_opace_footer();
     }
     
     /**
@@ -298,6 +367,7 @@ class AI_Core_Admin {
             </form>
         </div>
         <?php
+        self::render_opace_footer();
     }
     
     /**
@@ -350,6 +420,7 @@ class AI_Core_Admin {
             </div>
         </div>
         <?php
+        self::render_opace_footer();
     }
     
     /**
@@ -360,6 +431,7 @@ class AI_Core_Admin {
     public function render_prompt_library_page() {
         $library = AI_Core_Prompt_Library::get_instance();
         $library->render_page();
+        self::render_opace_footer();
     }
 
     /**
@@ -370,5 +442,6 @@ class AI_Core_Admin {
     public function render_addons_page() {
         $addons = AI_Core_Addons::get_instance();
         $addons->render_addons_page();
+        self::render_opace_footer();
     }
 }

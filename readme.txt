@@ -4,7 +4,7 @@ Tags: AI, Prompt Engineering, Claude, Gemini, OpenAI
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.14
+Stable tag: 1.0.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ AI prompt engineering hub for WordPress: manage OpenAI, Claude and Gemini API ke
 
 == Description ==
 
-**Compatibility:** Version 1.0.14 was tested on WordPress 7.1 and PHP 8.4, plus WordPress 6.5 and PHP 7.4. Minimums: WordPress 6.5 and PHP 7.4.
+**Compatibility:** Version 1.0.15 was tested on WordPress 7.1 and PHP 8.4, plus WordPress 6.5 and PHP 7.4. Minimums: WordPress 6.5 and PHP 7.4.
 
 Opace AI Hub is independently developed by Opace Digital Agency and is not affiliated with, endorsed by or sponsored by OpenAI, Anthropic or Google.
 
@@ -234,6 +234,10 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 
 == Changelog ==
 
+= 1.0.15 =
+
+* Added a consistent, responsive More from Opace card to every Hub admin screen with clearly labelled WordPress plugin, GitHub, ChatGPT and Opace service links.
+
 = 1.0.14 =
 
 * Documented the paired AI-Scribe 3.2.36 install and upgrade compatibility boundary.
@@ -331,6 +335,10 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 * Consolidated all completed pre-release work as the first public 1.0 release.
 
 == Upgrade Notice ==
+
+= 1.0.15 =
+
+Adds a consistent More from Opace card to every Hub admin screen without changing provider, prompt or integration behaviour.
 
 = 1.0.14 =
 

@@ -1,5 +1,11 @@
 # Opace AI Hub changelog
 
+## 1.0.15 — 26 August 2026
+
+- add a consistent More from Opace card to every Hub admin screen
+- label WordPress plugin, GitHub, ChatGPT and Opace service destinations explicitly
+- keep the card responsive and separate from provider, prompt and integration behaviour
+
 ## 1.0.14 — 26 August 2026
 
 - document the paired AI-Scribe 3.2.36 install and upgrade compatibility boundary

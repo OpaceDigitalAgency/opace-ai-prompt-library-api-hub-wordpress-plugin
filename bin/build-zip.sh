@@ -37,9 +37,18 @@ mkdir -p "${STAGE_DIR}/${PLUGIN_SLUG}" "${OUTPUT_DIR}"
 rsync -a --exclude-from="${SRC_DIR}/.distignore" "${SRC_DIR}/" "${STAGE_DIR}/${PLUGIN_SLUG}/"
 find "${STAGE_DIR}/${PLUGIN_SLUG}" -name '.DS_Store' -delete
 
+# ZIP records timestamps and Unix permissions. Normalise both so rebuilding
+# unchanged source produces the same reviewable package hash.
+find "${STAGE_DIR}/${PLUGIN_SLUG}" -type d -exec chmod 0755 {} +
+find "${STAGE_DIR}/${PLUGIN_SLUG}" -type f -exec chmod 0644 {} +
+find "${STAGE_DIR}/${PLUGIN_SLUG}" -exec touch -t 198001010000 {} +
+
 ZIP_PATH="${OUTPUT_DIR}/${PLUGIN_SLUG}-${VERSION}.zip"
 rm -f "${ZIP_PATH}"
-(cd "${STAGE_DIR}" && zip -rq "${ZIP_PATH}" "${PLUGIN_SLUG}")
+(
+    cd "${STAGE_DIR}"
+    find "${PLUGIN_SLUG}" -print | LC_ALL=C sort | zip -X -q "${ZIP_PATH}" -@
+)
 
 for forbidden in '/.git/' '/.github/' '/.wordpress-org/' '/bin/' '/docs/' '/research/' '/recovery/' '/backups/' '.DS_Store'; do
     if unzip -Z1 "${ZIP_PATH}" | grep -Fq -- "${forbidden}"; then

@@ -4,7 +4,7 @@ Tags: AI, Prompt Engineering, Claude, Gemini, OpenAI
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.13
+Stable tag: 1.0.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ AI prompt engineering hub for WordPress: manage OpenAI, Claude and Gemini API ke
 
 == Description ==
 
-**Compatibility:** Version 1.0.13 was tested on WordPress 7.1 and PHP 8.3. Minimums: WordPress 6.5 and PHP 7.4.
+**Compatibility:** Version 1.0.14 was tested on WordPress 7.1 and PHP 8.4, plus WordPress 6.5 and PHP 7.4. Minimums: WordPress 6.5 and PHP 7.4.
 
 Opace AI Hub is independently developed by Opace Digital Agency and is not affiliated with, endorsed by or sponsored by OpenAI, Anthropic or Google.
 
@@ -106,7 +106,7 @@ The maintained offline fallbacks are currently `gpt-5.6-terra`, `claude-opus-5`,
 
 = Compatible plugins =
 
-* **AI-Scribe 3.0 or later** - AI content creation and SEO optimisation. From Hub 1.0.13, the Add-ons screen installs the public AI-Scribe package after explicit consent, then waits for the administrator to activate it from the same card.
+* **AI-Scribe 3.0 or later** - AI content creation and SEO optimisation. Hub 1.0.13 or newer supports AI-Scribe 3.2.36's corrected install and upgrade flow. The Add-ons screen installs the public AI-Scribe package after explicit consent, then waits for the administrator to activate it from the same card.
 
 Developers can also use Opace AI Hub's PHP API in their own plugins.
 
@@ -234,6 +234,12 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 
 == Changelog ==
 
+= 1.0.14 =
+
+* Documented the paired AI-Scribe 3.2.36 install and upgrade compatibility boundary.
+* Made Hub release ZIPs reproducible so the reviewed source always rebuilds to the same hash.
+* Rechecked the complete readme for unwanted forced line breaks and retained the prominent companion and source links.
+
 = 1.0.13 =
 
 * Split AI-Scribe installation and activation into two explicit actions in the same Add-ons card.
@@ -325,6 +331,10 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 * Consolidated all completed pre-release work as the first public 1.0 release.
 
 == Upgrade Notice ==
+
+= 1.0.14 =
+
+Pairs with AI-Scribe 3.2.36's corrected legacy migration, historical-Hub updating and multisite setup flow.
 
 = 1.0.13 =
 

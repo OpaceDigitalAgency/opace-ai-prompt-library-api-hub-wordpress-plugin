@@ -1,5 +1,11 @@
 # Opace AI Hub changelog
 
+## 1.0.14 — 26 August 2026
+
+- document the paired AI-Scribe 3.2.36 install and upgrade compatibility boundary
+- make release ZIP output reproducible from the same reviewed source
+- retain the corrected WordPress.org paragraph formatting and prominent companion/source links
+
 ## 1.0.13 — 25 August 2026
 
 - install AI-Scribe from WordPress.org only after explicit administrator consent

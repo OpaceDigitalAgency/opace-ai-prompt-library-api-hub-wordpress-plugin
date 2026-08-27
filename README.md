@@ -1,4 +1,4 @@
-# Opace AI Prompt Library & API Integration Hub for OpenAI, Claude & Gemini (WordPress Plugin)
+# Opace AI Hub: Prompt Library & API Integration Hub for OpenAI, Claude & Gemini
 
 ![Opace AI Hub connects WordPress to OpenAI, Anthropic Claude, Google Gemini and compatible AI providers](.wordpress-org/banner-1544x500.png)
 

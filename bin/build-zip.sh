@@ -35,6 +35,9 @@ trap 'rm -rf "${STAGE_DIR}"' EXIT
 mkdir -p "${STAGE_DIR}/${PLUGIN_SLUG}" "${OUTPUT_DIR}"
 
 rsync -a --exclude-from="${SRC_DIR}/.distignore" "${SRC_DIR}/" "${STAGE_DIR}/${PLUGIN_SLUG}/"
+# WordPress Plugin Check requires the declared Domain Path to exist in the
+# package. Git cannot retain an empty directory, so create it during packaging.
+mkdir -p "${STAGE_DIR}/${PLUGIN_SLUG}/languages"
 find "${STAGE_DIR}/${PLUGIN_SLUG}" -name '.DS_Store' -delete
 
 # ZIP records timestamps and Unix permissions. Normalise both so rebuilding

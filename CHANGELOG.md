@@ -1,5 +1,11 @@
 # Opace AI Hub changelog
 
+## 1.0.16 — 27 August 2026
+
+- show every stored Hub credential as saved and validated, saved but invalid, or saved and not yet tested
+- keep the last explicit validation result separate from model catalogue refreshes
+- let administrators re-test an encrypted saved key without exposing it to the browser
+
 ## 1.0.15 — 26 August 2026
 
 - add a consistent More from Opace card to every Hub admin screen

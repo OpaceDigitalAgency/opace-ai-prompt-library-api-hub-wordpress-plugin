@@ -3,7 +3,7 @@
  * Plugin Name: Opace AI Prompt Library & API Integration Hub for OpenAI, Claude & Gemini
  * Plugin URI: https://opace.agency/services/web-design/wordpress-development/
  * Description: Connect WordPress plugins to OpenAI, Anthropic Claude and Google Gemini with shared credentials, live models, prompts and usage records.
- * Version: 1.0.15
+ * Version: 1.0.16
  * Author: Opace Digital Agency
  * Author URI: https://opace.agency
  * License: GPLv2 or later
@@ -15,7 +15,7 @@
  * Tags: ai, openai, claude, gemini, api, integration, artificial intelligence
  *
  * @package AI_Core
- * @version 1.0.15
+ * @version 1.0.16
  */
 
 // Prevent direct access
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
 // already be loaded when Opace AI Hub is activated, which otherwise emits a
 // "Constant already defined" warning immediately before the redeclare fatal.
 if (!defined('AI_CORE_VERSION')) {
-    define('AI_CORE_VERSION', '1.0.15');
+    define('AI_CORE_VERSION', '1.0.16');
 }
 if (!defined('AI_CORE_PLUGIN_FILE')) {
     define('AI_CORE_PLUGIN_FILE', __FILE__);
@@ -411,6 +411,10 @@ class AI_Core_Plugin {
         $provider_selected_models = isset($settings['provider_models']) && is_array($settings['provider_models']) ? $settings['provider_models'] : array();
         $provider_options = isset($settings['provider_options']) && is_array($settings['provider_options']) ? $settings['provider_options'] : array();
         $provider_metadata = class_exists('AICore\\Registry\\ModelRegistry') ? \AICore\Registry\ModelRegistry::exportProviderMetadata() : array();
+        $provider_validation = array();
+        foreach (array_keys($provider_labels) as $provider_key) {
+            $provider_validation[$provider_key] = AI_Core_Settings::get_credential_validation_status($provider_key, $settings);
+        }
 
         // Prepare localization data
         $localize_data = array(
@@ -435,18 +439,23 @@ class AI_Core_Plugin {
                 'awaitingKey' => __('Waiting for key...', 'opace-ai-prompt-library-api-hub'),
                 'keyTooShort' => __('Continue pasting your key to validate.', 'opace-ai-prompt-library-api-hub'),
                 'saving' => __('Saving key...', 'opace-ai-prompt-library-api-hub'),
-                'saved' => __('Key saved successfully.', 'opace-ai-prompt-library-api-hub'),
-                'alreadySaved' => __('This key is already saved.', 'opace-ai-prompt-library-api-hub'),
+                'saved' => __('Saved and validated.', 'opace-ai-prompt-library-api-hub'),
+                'alreadySaved' => __('This key is already saved and validated.', 'opace-ai-prompt-library-api-hub'),
                 'enterKeyPlaceholder' => __('Enter your API key', 'opace-ai-prompt-library-api-hub'),
                 'refreshing' => __('Refreshing models...', 'opace-ai-prompt-library-api-hub'),
                 'refreshingPricing' => __('Refreshing pricing...', 'opace-ai-prompt-library-api-hub'),
                 'retentionKeep' => __('Current choice: keep all Opace AI Hub data after deletion.', 'opace-ai-prompt-library-api-hub'),
                 'retentionDelete' => __('Current choice: permanently remove all Opace AI Hub data when deleted.', 'opace-ai-prompt-library-api-hub'),
-                'modelsLoaded' => __('Models updated.', 'opace-ai-prompt-library-api-hub'),
+                'modelsLoaded' => __('Models updated. Credential validation status unchanged.', 'opace-ai-prompt-library-api-hub'),
                 'cleared' => __('API key cleared.', 'opace-ai-prompt-library-api-hub'),
                 'connected' => __('Connected', 'opace-ai-prompt-library-api-hub'),
-                'connectedViaWordPress' => __('Connected via WordPress', 'opace-ai-prompt-library-api-hub'),
-                'connectedViaHub' => __('Connected via Hub', 'opace-ai-prompt-library-api-hub'),
+                'configuredViaWordPress' => __('Configured via WordPress', 'opace-ai-prompt-library-api-hub'),
+                'credentialValid' => __('Saved and validated', 'opace-ai-prompt-library-api-hub'),
+                'credentialInvalid' => __('Saved but invalid', 'opace-ai-prompt-library-api-hub'),
+                'credentialUntested' => __('Saved, not yet tested', 'opace-ai-prompt-library-api-hub'),
+                'credentialValidDetail' => __('Use Test Key anytime to check it again.', 'opace-ai-prompt-library-api-hub'),
+                'credentialInvalidDetail' => __('Enter a working key and test it again before generating.', 'opace-ai-prompt-library-api-hub'),
+                'credentialUntestedDetail' => __('Use Test Key when you want to confirm it.', 'opace-ai-prompt-library-api-hub'),
                 'awaiting' => __('Awaiting Provider', 'opace-ai-prompt-library-api-hub'),
                 'addKeyFirst' => __('Configure a provider to load models', 'opace-ai-prompt-library-api-hub'),
                 'testSelectProvider' => __('Select a provider first', 'opace-ai-prompt-library-api-hub'),
@@ -545,6 +554,7 @@ class AI_Core_Plugin {
                 'selectedModels' => $provider_selected_models,
                 'options' => $provider_options,
                 'meta' => $provider_metadata,
+                'validation' => $provider_validation,
                 'sources' => array_combine(
                     array_keys($provider_labels),
                     array_map(array($api, 'get_provider_source'), array_keys($provider_labels))

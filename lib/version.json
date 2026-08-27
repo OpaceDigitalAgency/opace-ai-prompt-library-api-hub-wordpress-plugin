@@ -1,11 +1,12 @@
 {
-  "version": "1.0.15",
-  "build": "20260826-015",
+  "version": "1.0.16",
+  "build": "20260827-016",
   "compatibility": {
     "php": ">=7.4",
     "wordpress": ">=6.5"
   },
   "changelog": {
+    "1.0.16": "Distinguish validated, invalid and not-yet-tested stored provider credentials",
     "1.0.15": "Add consistent related Opace links to every Hub admin screen",
     "1.0.14": "Document AI-Scribe 3.2.36 compatibility and produce reproducible release packages",
     "1.0.13": "Separate consented AI-Scribe installation and explicit activation in the same Add-ons card",

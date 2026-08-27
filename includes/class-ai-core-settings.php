@@ -61,6 +61,11 @@ class AI_Core_Settings {
      */
     const CLEAR_SENTINEL = '__ai_core_clear_key__';
 
+    /** Credential validation states stored alongside provider settings. */
+    const CREDENTIAL_VALID = 'validated';
+    const CREDENTIAL_INVALID = 'invalid';
+    const CREDENTIAL_UNTESTED = 'untested';
+
     /**
      * Class instance
      *
@@ -129,6 +134,130 @@ class AI_Core_Settings {
         }
 
         return $offered;
+    }
+
+    /**
+     * Read the last explicit validation result for a stored Hub key.
+     *
+     * Existing keys from releases before 1.0.16 have no result recorded, so
+     * they truthfully begin as "not yet tested". Model discovery and catalogue
+     * refreshes never call this a validation result.
+     *
+     * @param string     $provider Provider key.
+     * @param array|null $settings Optional settings snapshot.
+     * @return string Empty when no Hub key is stored, otherwise a state constant.
+     */
+    public static function get_credential_validation_status($provider, $settings = null) {
+        $provider = sanitize_key($provider);
+        $settings = is_array($settings) ? $settings : get_option(self::OPTION_NAME, array());
+        $field = $provider . '_api_key';
+
+        if (empty($settings[$field])) {
+            return '';
+        }
+
+        $status = isset($settings['credential_validation'][$provider])
+            ? sanitize_key($settings['credential_validation'][$provider])
+            : self::CREDENTIAL_UNTESTED;
+
+        return in_array($status, self::get_credential_validation_states(), true)
+            ? $status
+            : self::CREDENTIAL_UNTESTED;
+    }
+
+    /**
+     * Persist the result of an explicit credential test.
+     *
+     * @param string $provider Provider key.
+     * @param string $status   One of the credential state constants.
+     * @return bool Whether a stored Hub key was updated.
+     */
+    public static function record_credential_validation_status($provider, $status) {
+        $provider = sanitize_key($provider);
+        $status = sanitize_key($status);
+
+        if (!in_array($status, self::get_credential_validation_states(), true)) {
+            return false;
+        }
+
+        $settings = get_option(self::OPTION_NAME, array());
+        if (!is_array($settings) || empty($settings[$provider . '_api_key'])) {
+            return false;
+        }
+
+        if (!isset($settings['credential_validation']) || !is_array($settings['credential_validation'])) {
+            $settings['credential_validation'] = array();
+        }
+
+        $settings['credential_validation'][$provider] = $status;
+        update_option(self::OPTION_NAME, $settings);
+        return true;
+    }
+
+    /** @return array Allowed stored credential states. */
+    private static function get_credential_validation_states() {
+        return array(self::CREDENTIAL_VALID, self::CREDENTIAL_INVALID, self::CREDENTIAL_UNTESTED);
+    }
+
+    /**
+     * Keep credential metadata truthful on every option write, including
+     * migrations and integrations that run outside the Settings screen.
+     *
+     * @param mixed $settings Settings about to be stored.
+     * @return mixed Normalised settings.
+     */
+    public static function normalise_credential_validation($settings) {
+        if (!is_array($settings)) {
+            return $settings;
+        }
+
+        $existing = get_option(self::OPTION_NAME, array());
+        $existing = is_array($existing) ? $existing : array();
+        $validation = isset($settings['credential_validation']) && is_array($settings['credential_validation'])
+            ? $settings['credential_validation']
+            : array();
+        $clean = array();
+
+        foreach ($validation as $provider => $status) {
+            $provider = sanitize_key($provider);
+            $status = sanitize_key($status);
+            if (in_array($status, self::get_credential_validation_states(), true)) {
+                $clean[$provider] = $status;
+            }
+        }
+
+        foreach (self::get_secret_fields() as $field) {
+            $provider = substr($field, 0, -strlen('_api_key'));
+            $old_key = isset($existing[$field]) ? (string) $existing[$field] : '';
+            $new_key = isset($settings[$field]) ? (string) $settings[$field] : '';
+
+            if ('' === $new_key) {
+                unset($clean[$provider]);
+            } elseif ('' === $old_key || !hash_equals($old_key, $new_key)) {
+                $clean[$provider] = self::CREDENTIAL_UNTESTED;
+            } elseif (!isset($clean[$provider])) {
+                $clean[$provider] = self::CREDENTIAL_UNTESTED;
+            }
+        }
+
+        $settings['credential_validation'] = $clean;
+        return $settings;
+    }
+
+    /**
+     * Translate the exact user-facing state for a stored Hub key.
+     *
+     * @param string $status Credential state.
+     * @return string
+     */
+    private static function get_credential_validation_label($status) {
+        if (self::CREDENTIAL_VALID === $status) {
+            return __('Saved and validated', 'opace-ai-prompt-library-api-hub');
+        }
+        if (self::CREDENTIAL_INVALID === $status) {
+            return __('Saved but invalid', 'opace-ai-prompt-library-api-hub');
+        }
+        return __('Saved, not yet tested', 'opace-ai-prompt-library-api-hub');
     }
 
     /**
@@ -440,6 +569,7 @@ class AI_Core_Settings {
         $source = $api->get_provider_source($provider);
         $is_configured = in_array($provider, $api->get_configured_providers(), true);
         $wordpress_managed = in_array($source, array('wordpress', 'wordpress_and_ai_core'), true);
+        $credential_status = self::get_credential_validation_status($provider, $settings);
 
         // Masked hint only. The key itself is never written into the markup,
         // so the browser has no copy of it and view-source shows nothing.
@@ -485,6 +615,22 @@ class AI_Core_Settings {
         echo '<span class="ai-core-key-status" id="' . esc_attr($provider) . '-status"></span>';
         echo '</div>';
 
+        if ($has_saved_key) {
+            $status_colour = self::CREDENTIAL_VALID === $credential_status ? '#008a20' : (self::CREDENTIAL_INVALID === $credential_status ? '#b32d2e' : '#646970');
+            $status_icon = self::CREDENTIAL_VALID === $credential_status ? 'dashicons-yes-alt' : (self::CREDENTIAL_INVALID === $credential_status ? 'dashicons-warning' : 'dashicons-info-outline');
+            echo '<p class="description ai-core-credential-state ai-core-credential-state--' . esc_attr($credential_status) . '" style="color: ' . esc_attr($status_colour) . ';">';
+            echo '<span class="dashicons ' . esc_attr($status_icon) . '"></span> ';
+            echo '<strong>' . esc_html(self::get_credential_validation_label($credential_status)) . '.</strong> ';
+            if (self::CREDENTIAL_INVALID === $credential_status) {
+                echo esc_html__('Enter a working key and test it again before generating.', 'opace-ai-prompt-library-api-hub');
+            } elseif (self::CREDENTIAL_UNTESTED === $credential_status) {
+                echo esc_html__('Use Test Key when you want to confirm it.', 'opace-ai-prompt-library-api-hub');
+            } else {
+                echo esc_html__('Use Test Key anytime to check it again.', 'opace-ai-prompt-library-api-hub');
+            }
+            echo '</p>';
+        }
+
         if ('wordpress_and_ai_core' === $source) {
             echo '<p class="description" style="color: #b32d2e;">';
             echo '<span class="dashicons dashicons-warning"></span> ';
@@ -502,20 +648,15 @@ class AI_Core_Settings {
             echo '</p>';
         } elseif ('ai_core' === $source) {
             echo '<p class="description" style="color: #2271b1;">';
-            echo '<span class="dashicons dashicons-yes-alt"></span> ';
-            echo esc_html__('The encrypted Hub key is also available at runtime to plugins using the WordPress AI Client.', 'opace-ai-prompt-library-api-hub');
+            echo '<span class="dashicons dashicons-info-outline"></span> ';
+            echo esc_html__('The encrypted Hub key can also be supplied at runtime to plugins using the WordPress AI Client.', 'opace-ai-prompt-library-api-hub');
             echo '</p>';
         } elseif ('ai_core_direct' === $source) {
             echo '<p class="description" style="color: #2271b1;">';
-            echo '<span class="dashicons dashicons-yes-alt"></span> ';
-            echo esc_html__('The encrypted Hub key is active. Install and activate the matching WordPress AI provider plugin to share it with external AI Client plugins.', 'opace-ai-prompt-library-api-hub');
+            echo '<span class="dashicons dashicons-info-outline"></span> ';
+            echo esc_html__('Install and activate the matching WordPress AI provider plugin if you want to share this Hub key with external AI Client plugins.', 'opace-ai-prompt-library-api-hub');
             echo '</p>';
-        } elseif ($has_saved_key) {
-            echo '<p class="description" style="color: #2271b1;">';
-            echo '<span class="dashicons dashicons-yes-alt"></span> ';
-            echo esc_html__('API key validated and saved automatically. Use Test Key anytime to re-verify.', 'opace-ai-prompt-library-api-hub');
-            echo '</p>';
-        } else {
+        } elseif (!$has_saved_key) {
             echo '<p class="description">';
             printf(
                 /* translators: %s: provider name, e.g. OpenAI. */
@@ -545,6 +686,8 @@ class AI_Core_Settings {
         foreach ($providers as $key => $label) {
             $is_configured = in_array($key, $api->get_configured_providers(), true);
             $source = $api->get_provider_source($key);
+            $has_saved_key = !empty($settings[$key . '_api_key']);
+            $credential_status = self::get_credential_validation_status($key, $settings);
             $models = $is_configured ? $api->get_available_models($key) : array();
             $models = array_values(array_filter($models, static function ($model) use ($key) {
                 return \AICore\Registry\ModelRegistry::isTextGenerationModel((string) $model, $key);
@@ -555,10 +698,20 @@ class AI_Core_Settings {
             echo '<div class="ai-core-provider-card" data-provider="' . esc_attr($key) . '" data-has-key="' . ($is_configured ? '1' : '0') . '">';
             echo '<div class="ai-core-provider-card__header">';
             echo '<h4>' . esc_html($label) . '</h4>';
-            echo '<span class="ai-core-provider-status ' . ($is_configured ? 'is-active' : 'is-inactive') . '">';
-            $status_label = $is_configured
-                ? (in_array($source, array('wordpress', 'wordpress_and_ai_core'), true) ? __('Connected via WordPress', 'opace-ai-prompt-library-api-hub') : __('Connected via Hub', 'opace-ai-prompt-library-api-hub'))
-                : __('Awaiting Provider', 'opace-ai-prompt-library-api-hub');
+            $status_class = $is_configured ? 'is-active' : 'is-inactive';
+            if ($has_saved_key) {
+                $status_class = self::CREDENTIAL_VALID === $credential_status
+                    ? 'is-credential-valid'
+                    : 'is-credential-' . $credential_status;
+            }
+            echo '<span class="ai-core-provider-status ' . esc_attr($status_class) . '">';
+            if (!$is_configured) {
+                $status_label = __('Awaiting Provider', 'opace-ai-prompt-library-api-hub');
+            } elseif (in_array($source, array('wordpress', 'wordpress_and_ai_core'), true)) {
+                $status_label = __('Configured via WordPress', 'opace-ai-prompt-library-api-hub');
+            } else {
+                $status_label = self::get_credential_validation_label($credential_status);
+            }
             echo esc_html($status_label);
             echo '</span>';
             echo '</div>';
@@ -702,6 +855,7 @@ class AI_Core_Settings {
             'persist_on_uninstall' => true,
             'provider_models' => array(),
             'provider_options' => array(),
+            'credential_validation' => array(),
         );
     }
     
@@ -766,6 +920,40 @@ class AI_Core_Settings {
 
             $sanitized[$key] = $new_value;
         }
+
+        // Validation is separate from storage and from model discovery. A
+        // changed key has not been tested unless the explicit validation AJAX
+        // handler records a result after the write succeeds.
+        $validation = isset($existing_settings['credential_validation']) && is_array($existing_settings['credential_validation'])
+            ? $existing_settings['credential_validation']
+            : array();
+
+        if (!$is_settings_form && isset($input['credential_validation']) && is_array($input['credential_validation'])) {
+            $validation = array();
+            foreach ($input['credential_validation'] as $provider => $status) {
+                $provider = sanitize_key($provider);
+                $status = sanitize_key($status);
+                if (in_array($status, self::get_credential_validation_states(), true)) {
+                    $validation[$provider] = $status;
+                }
+            }
+        }
+
+        foreach (self::get_secret_fields() as $key) {
+            $provider = substr($key, 0, -strlen('_api_key'));
+            $existing = isset($existing_settings[$key]) ? (string) $existing_settings[$key] : '';
+            $current = isset($sanitized[$key]) ? (string) $sanitized[$key] : '';
+
+            if ('' === $current) {
+                unset($validation[$provider]);
+            } elseif ('' === $existing || !hash_equals($existing, $current)) {
+                $validation[$provider] = self::CREDENTIAL_UNTESTED;
+            } elseif (!isset($validation[$provider])) {
+                $validation[$provider] = self::CREDENTIAL_UNTESTED;
+            }
+        }
+
+        $sanitized['credential_validation'] = $validation;
 
         // Sanitize default provider
         $sanitized['default_provider'] = isset($input['default_provider']) ? sanitize_text_field($input['default_provider']) : 'openai';
@@ -936,6 +1124,8 @@ class AI_Core_Settings {
      */
     public static function bootstrap() {
         add_filter('option_' . self::OPTION_NAME, array(__CLASS__, 'decrypt_settings_option'));
+        // Runs even when an integration writes outside wp-admin.
+        add_filter('sanitize_option_' . self::OPTION_NAME, array(__CLASS__, 'normalise_credential_validation'), 15);
         // Priority 20 so this runs after the registered sanitize callback.
         add_filter('sanitize_option_' . self::OPTION_NAME, array(__CLASS__, 'encrypt_settings_option'), 20);
         add_action('plugins_loaded', array(__CLASS__, 'maybe_migrate_key_storage'), 5);

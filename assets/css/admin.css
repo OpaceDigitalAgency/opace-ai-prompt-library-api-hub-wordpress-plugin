@@ -790,6 +790,30 @@ body[class*="ai-core"] #wpfooter a {
     color: var(--ai-core-danger);
 }
 
+.ai-core-provider-status.is-credential-valid {
+    color: #008a20;
+}
+
+.ai-core-provider-status.is-credential-invalid {
+    color: var(--ai-core-danger);
+}
+
+.ai-core-provider-status.is-credential-untested {
+    color: var(--ai-core-muted);
+}
+
+.ai-core-credential-state--validated {
+    color: #008a20 !important;
+}
+
+.ai-core-credential-state--invalid {
+    color: var(--ai-core-danger) !important;
+}
+
+.ai-core-credential-state--untested {
+    color: var(--ai-core-muted) !important;
+}
+
 .ai-core-provider-card__body label {
     display: block;
     margin-bottom: var(--ai-core-space-1);

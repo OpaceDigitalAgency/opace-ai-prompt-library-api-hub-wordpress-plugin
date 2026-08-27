@@ -5,7 +5,7 @@
  * Handles admin interface and menu pages
  * 
  * @package AI_Core
- * @version 1.0.15
+ * @version 1.0.16
  */
 
 // Prevent direct access

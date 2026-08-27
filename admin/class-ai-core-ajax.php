@@ -115,7 +115,16 @@ class AI_Core_AJAX {
 
         if (empty($validation['valid'])) {
             $message = $validation['error'] ?? __('API key validation failed', 'opace-ai-prompt-library-api-hub');
-            wp_send_json_error(array('message' => $message));
+            $stored_settings = get_option('ai_core_settings', array());
+            $stored_key = isset($stored_settings[$provider . '_api_key']) ? (string) $stored_settings[$provider . '_api_key'] : '';
+            $testing_saved_key = '' !== $stored_key && hash_equals($stored_key, $api_key);
+            if ($testing_saved_key) {
+                AI_Core_Settings::record_credential_validation_status($provider, AI_Core_Settings::CREDENTIAL_INVALID);
+            }
+            wp_send_json_error(array(
+                'message' => $message,
+                'credential_status' => $testing_saved_key ? AI_Core_Settings::CREDENTIAL_INVALID : '',
+            ));
         }
 
         $settings = get_option('ai_core_settings', array());
@@ -131,6 +140,7 @@ class AI_Core_AJAX {
         }
 
         update_option('ai_core_settings', $settings);
+        AI_Core_Settings::record_credential_validation_status($provider, AI_Core_Settings::CREDENTIAL_VALID);
 
         if (class_exists('AI_Core_WordPress_AI_Client')) {
             AI_Core_WordPress_AI_Client::bridge_provider($provider, $api_key);
@@ -173,6 +183,7 @@ class AI_Core_AJAX {
             'parameters' => $parameterSchema,
             'model_meta' => \AICore\Registry\ModelRegistry::exportProviderMetadata()[$provider] ?? array(),
             'source' => AI_Core_API::get_instance()->get_provider_source($provider),
+            'credential_status' => AI_Core_Settings::CREDENTIAL_VALID,
         ));
     }
 
@@ -243,15 +254,23 @@ class AI_Core_AJAX {
         }
         
         $provider = isset($_POST['provider']) ? sanitize_text_field(wp_unslash( $_POST['provider'] )) : '';
-        $api_key = isset($_POST['api_key']) ? sanitize_text_field(wp_unslash( $_POST['api_key'] )) : '';
+        $posted_api_key = isset($_POST['api_key']) ? sanitize_text_field(wp_unslash( $_POST['api_key'] )) : '';
+        $api_key = $posted_api_key;
+        $stored_key = '';
 
         // The stored key is never sent to the browser, so a test after a page
         // reload arrives with an empty field. Fall back to the saved value, as
         // AI_Core_Validator::get_available_models() already does.
         if ('' === $api_key && '' !== $provider) {
             $settings = get_option('ai_core_settings', array());
-            $api_key  = $settings[$provider . '_api_key'] ?? '';
+            $stored_key = isset($settings[$provider . '_api_key']) ? (string) $settings[$provider . '_api_key'] : '';
+            $api_key  = $stored_key;
+        } elseif ('' !== $provider) {
+            $settings = get_option('ai_core_settings', array());
+            $stored_key = isset($settings[$provider . '_api_key']) ? (string) $settings[$provider . '_api_key'] : '';
         }
+
+        $testing_saved_key = '' !== $stored_key && hash_equals($stored_key, $api_key);
 
         if ('' !== $provider && '' === $api_key) {
             $api = AI_Core_API::get_instance();
@@ -272,13 +291,21 @@ class AI_Core_AJAX {
         $result = $validator->validate_api_key($provider, $api_key);
         
         if ($result['valid']) {
+            if ($testing_saved_key) {
+                AI_Core_Settings::record_credential_validation_status($provider, AI_Core_Settings::CREDENTIAL_VALID);
+            }
             wp_send_json_success(array(
                 'message' => __('API key is valid!', 'opace-ai-prompt-library-api-hub'),
-                'provider' => $result['provider'] ?? $provider
+                'provider' => $result['provider'] ?? $provider,
+                'credential_status' => $testing_saved_key ? AI_Core_Settings::CREDENTIAL_VALID : '',
             ));
         } else {
+            if ($testing_saved_key) {
+                AI_Core_Settings::record_credential_validation_status($provider, AI_Core_Settings::CREDENTIAL_INVALID);
+            }
             wp_send_json_error(array(
-                'message' => $result['error'] ?? __('API key validation failed', 'opace-ai-prompt-library-api-hub')
+                'message' => $result['error'] ?? __('API key validation failed', 'opace-ai-prompt-library-api-hub'),
+                'credential_status' => $testing_saved_key ? AI_Core_Settings::CREDENTIAL_INVALID : '',
             ));
         }
     }
@@ -338,6 +365,9 @@ class AI_Core_AJAX {
             'preferred_model' => $preferredModel,
             'parameters' => $preferredModel ? \AICore\Registry\ModelRegistry::getParameterSchema($preferredModel) : array(),
             'model_meta' => \AICore\Registry\ModelRegistry::exportProviderMetadata()[$provider] ?? array(),
+            // Catalogue discovery is deliberately separate from credential
+            // validation. This reports the stored state without changing it.
+            'credential_status' => AI_Core_Settings::get_credential_validation_status($provider, $settings),
         ));
     }
 

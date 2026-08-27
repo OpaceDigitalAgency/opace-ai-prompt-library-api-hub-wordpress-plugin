@@ -34,6 +34,7 @@
         providerModels: providerModelsMap,
         providerOptions: $.extend(true, {}, (aiCoreAdmin.providers && aiCoreAdmin.providers.options) || {}),
         modelMeta: $.extend(true, {}, (aiCoreAdmin.providers && aiCoreAdmin.providers.meta) || {}),
+        credentialValidation: $.extend({}, (aiCoreAdmin.providers && aiCoreAdmin.providers.validation) || {}),
         providerCapabilities: {}
     };
 
@@ -146,6 +147,40 @@
             const flag = hasKey ? '1' : '0';
             $('#' + provider + '_api_key').attr('data-has-saved', flag);
             $('.ai-core-api-key-field[data-provider="' + provider + '"]').attr('data-has-saved', flag);
+        },
+
+        renderCredentialState: function(provider, status) {
+            const $field = $('.ai-core-api-key-field[data-provider="' + provider + '"]');
+            if (!$field.length || !status) {
+                return;
+            }
+
+            let $description = $field.siblings('.ai-core-credential-state').first();
+            if (!$description.length) {
+                $description = $('<p>', { 'class': 'description ai-core-credential-state' });
+                $field.after($description);
+            }
+
+            let label = aiCoreAdmin.strings.credentialUntested;
+            let detail = aiCoreAdmin.strings.credentialUntestedDetail;
+            let icon = 'dashicons-info-outline';
+            if (status === 'validated') {
+                label = aiCoreAdmin.strings.credentialValid;
+                detail = aiCoreAdmin.strings.credentialValidDetail;
+                icon = 'dashicons-yes-alt';
+            } else if (status === 'invalid') {
+                label = aiCoreAdmin.strings.credentialInvalid;
+                detail = aiCoreAdmin.strings.credentialInvalidDetail;
+                icon = 'dashicons-warning';
+            }
+
+            $description
+                .attr('class', 'description ai-core-credential-state ai-core-credential-state--' + status)
+                .empty()
+                .append($('<span>', { 'class': 'dashicons ' + icon, 'aria-hidden': 'true' }))
+                .append(document.createTextNode(' '))
+                .append($('<strong>').text(label + '.'))
+                .append(document.createTextNode(' ' + detail));
         },
 
         bootstrapProviders: function() {
@@ -364,6 +399,8 @@
 
             state.configured.add(provider);
             state.sources[provider] = data.source || 'ai_core';
+            state.credentialValidation[provider] = data.credential_status || 'validated';
+            this.renderCredentialState(provider, state.credentialValidation[provider]);
             this.markProviderConnected(provider);
 
             if (data.model_meta) {
@@ -511,6 +548,8 @@
                 this.showStatus($status, 'notice', aiCoreAdmin.strings.cleared);
 
                 delete state.sessionKeys[provider];
+                delete state.credentialValidation[provider];
+                $('.ai-core-api-key-field[data-provider="' + provider + '"]').siblings('.ai-core-credential-state').remove();
                 if (response.data && response.data.still_configured) {
                     state.configured.add(provider);
                     state.sources[provider] = response.data.source || 'wordpress';
@@ -589,8 +628,26 @@
             const $card = $('.ai-core-provider-card[data-provider="' + provider + '"]');
             const source = state.sources[provider] || '';
             const throughWordPress = source === 'wordpress' || source === 'wordpress_and_ai_core';
+            const credentialStatus = state.credentialValidation[provider] || 'untested';
+            let statusText = aiCoreAdmin.strings.credentialUntested;
+            let statusClass = 'is-credential-untested';
+
+            if (throughWordPress) {
+                statusText = aiCoreAdmin.strings.configuredViaWordPress;
+                statusClass = 'is-active';
+            } else if (credentialStatus === 'validated') {
+                statusText = aiCoreAdmin.strings.credentialValid;
+                statusClass = 'is-credential-valid';
+            } else if (credentialStatus === 'invalid') {
+                statusText = aiCoreAdmin.strings.credentialInvalid;
+                statusClass = 'is-credential-invalid';
+            }
+
             $card.attr('data-has-key', '1').addClass('is-active');
-            $card.find('.ai-core-provider-status').text(throughWordPress ? aiCoreAdmin.strings.connectedViaWordPress : aiCoreAdmin.strings.connectedViaHub).removeClass('is-inactive').addClass('is-active');
+            $card.find('.ai-core-provider-status')
+                .text(statusText)
+                .removeClass('is-inactive is-active is-credential-valid is-credential-invalid is-credential-untested')
+                .addClass(statusClass);
             $card.find('.ai-core-provider-model').prop('disabled', false);
             $card.find('.ai-core-provider-refresh').prop('disabled', false);
             this.ensureProviderOptionExists(provider);
@@ -601,7 +658,7 @@
         markProviderDisconnected: function(provider) {
             const $card = $('.ai-core-provider-card[data-provider="' + provider + '"]');
             $card.attr('data-has-key', '0').removeClass('is-active');
-            $card.find('.ai-core-provider-status').text(aiCoreAdmin.strings.awaiting).removeClass('is-active').addClass('is-inactive');
+            $card.find('.ai-core-provider-status').text(aiCoreAdmin.strings.awaiting).removeClass('is-active is-credential-valid is-credential-invalid is-credential-untested').addClass('is-inactive');
             $card.find('.ai-core-provider-model').prop('disabled', true).html('<option value="">' + aiCoreAdmin.strings.addKeyFirst + '</option>');
             $card.find('.ai-core-provider-refresh').prop('disabled', true);
             $card.find('.ai-core-provider-params').html('<p class="description">' + aiCoreAdmin.strings.addKeyFirst + '</p>');
@@ -778,17 +835,14 @@
             const $input = $('#' + provider + '_api_key');
             const $status = $('#' + provider + '-status');
 
-            // Only a key the user has in front of them can be tested. The
-            // stored key is never sent to the browser, so after a reload there
-            // is nothing here to re-test with.
+            // An empty field is safe: the server tests the encrypted saved key
+            // without ever sending it to the browser.
             const apiKey = $input.val() || state.sessionKeys[provider] || '';
 
             const source = state.sources[provider] || '';
             const wordpressManaged = source === 'wordpress' || source === 'wordpress_and_ai_core';
-            if (!apiKey && !wordpressManaged) {
-                const message = this.hasSavedKey(provider)
-                    ? (aiCoreAdmin.strings.pasteKeyToTest || 'A key is saved for this provider. Paste it again to re-test it.')
-                    : aiCoreAdmin.strings.missingKey;
+            if (!apiKey && !wordpressManaged && !this.hasSavedKey(provider)) {
+                const message = aiCoreAdmin.strings.missingKey;
                 this.showStatus($status, 'notice', message);
                 return;
             }
@@ -807,9 +861,19 @@
                 }
             }).done((response) => {
                 if (response && response.success) {
+                    if (response.data.credential_status) {
+                        state.credentialValidation[provider] = response.data.credential_status;
+                        this.renderCredentialState(provider, response.data.credential_status);
+                        this.markProviderConnected(provider);
+                    }
                     this.showStatus($status, 'success', aiCoreAdmin.strings.success + ': ' + response.data.message);
                 } else {
                     const message = response && response.data && response.data.message ? response.data.message : aiCoreAdmin.strings.error;
+                    if (response && response.data && response.data.credential_status) {
+                        state.credentialValidation[provider] = response.data.credential_status;
+                        this.renderCredentialState(provider, response.data.credential_status);
+                        this.markProviderConnected(provider);
+                    }
                     this.showStatus($status, 'error', aiCoreAdmin.strings.error + ': ' + message);
                 }
             }).fail((xhr, status, error) => {

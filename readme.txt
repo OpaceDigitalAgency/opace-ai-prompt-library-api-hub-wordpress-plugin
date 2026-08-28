@@ -4,7 +4,7 @@ Tags: AI, Prompt Engineering, Claude, Gemini, OpenAI
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.16
+Stable tag: 1.0.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,17 +12,19 @@ AI prompt engineering hub for WordPress: manage OpenAI, Claude and Gemini API ke
 
 == Description ==
 
-**Compatibility:** Version 1.0.16 was tested on WordPress 7.1 and PHP 8.4, plus WordPress 6.5 and PHP 7.4. Minimums: WordPress 6.5 and PHP 7.4.
+**Compatibility:** Version 1.0.17 was tested on WordPress 7.1 and PHP 8.4, plus WordPress 6.5 and PHP 7.4. Minimums: WordPress 6.5 and PHP 7.4.
 
 Opace AI Hub is independently developed by Opace Digital Agency and is not affiliated with, endorsed by or sponsored by OpenAI, Anthropic or Google.
 
 Opace AI Hub gives compatible WordPress plugins one shared connection to AI providers. Add an OpenAI, Anthropic Claude or Google Gemini key once, test it, and let compatible plugins use the same saved configuration.
 
-Opace AI Hub is independently installable infrastructure, not a content generator. AI-Scribe is a separate companion plugin that sends content-generation requests through it.
+Opace AI Hub is independently installable infrastructure, not a content generator. AI Scribe is a separate companion plugin that sends content-generation requests through it.
 
-**[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
+**[Opace AI Hub product page](https://opace.agency/tools/wordpress/ai-core-prompt-library-integration-hub/)**
 
-**[AI-Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
+**[AI Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
+
+**[AI Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
 
 **[Opace AI Hub on GitHub](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)**
 
@@ -30,13 +32,13 @@ Opace AI Hub is independently installable infrastructure, not a content generato
 
 As separate WordPress plugins added AI features, each one risked duplicating provider settings, model lists, request formats, prompt storage and cost calculations. Opace AI Hub moves that security-sensitive infrastructure into one maintained plugin. Site administrators get one place to rotate keys, choose models and review usage, while compatible plugins stay focused on their own workflows.
 
-= How AI-Scribe uses Opace AI Hub =
+= How AI Scribe uses Opace AI Hub =
 
-AI-Scribe owns article planning, writing, SEO metadata, editorial review and WordPress publishing. Opace AI Hub supplies its encrypted credentials, provider and model selection, normalised generation requests, reusable prompts, model capabilities and usage records.
+AI Scribe owns article planning, writing, SEO metadata, editorial review and WordPress publishing. Opace AI Hub supplies its encrypted credentials, provider and model selection, normalised generation requests, reusable prompts, model capabilities and usage records.
 
-**[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
+**[AI Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
 
-**[AI-Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
+**[AI Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
 
 **[Opace AI Hub on GitHub](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)**
 
@@ -106,7 +108,7 @@ The maintained offline fallbacks are currently `gpt-5.6-terra`, `claude-opus-5`,
 
 = Compatible plugins =
 
-* **AI-Scribe 3.0 or later** - AI content creation and SEO optimisation. Hub 1.0.13 or newer supports AI-Scribe 3.2.36's corrected install and upgrade flow. The Add-ons screen installs the public AI-Scribe package after explicit consent, then waits for the administrator to activate it from the same card.
+* **AI Scribe 3.0 or later** - AI content creation and SEO optimisation. Hub 1.0.13 or newer supports AI Scribe 3.2.36's corrected install and upgrade flow. The Add-ons screen installs the public AI Scribe package after explicit consent, then waits for the administrator to activate it from the same card.
 
 Developers can also use Opace AI Hub's PHP API in their own plugins.
 
@@ -156,15 +158,15 @@ Used when Opace AI Hub needs current published pricing for a discovered model an
 
 **WordPress.org plugin directory**
 
-Used only when an administrator chooses **Install AI-Scribe** on the Add-ons screen. Opace AI Hub asks the WordPress plugin API for AI-Scribe's public package and passes its download URL to WordPress's core installer. WordPress.org receives the normal plugin-information and package-download requests; Opace AI Hub does not send API keys, prompts, generated content, site settings or usage records. Installation stops for the administrator to choose **Activate AI-Scribe and continue**.
+Used only when an administrator chooses **Install AI Scribe** on the Add-ons screen. Opace AI Hub asks the WordPress plugin API for AI Scribe's public package and passes its download URL to WordPress's core installer. WordPress.org receives the normal plugin-information and package-download requests; Opace AI Hub does not send API keys, prompts, generated content, site settings or usage records. Installation stops for the administrator to choose **Activate AI Scribe and continue**.
 
-**[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
+**[AI Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
 
 Cost figures shown by Opace AI Hub are published-rate estimates. Free tiers, cached-token rates, batch pricing, negotiated rates and provider billing changes can make an invoice differ from the estimate.
 
 == Installation ==
 
-1. Upload the `opace-ai-prompt-library-api-hub` ZIP through Plugins > Add New Plugin > Upload Plugin, or install it from the WordPress.org Plugin Directory after approval.
+1. Install Opace AI Hub from Plugins > Add New Plugin, or upload the `opace-ai-prompt-library-api-hub` ZIP through Plugins > Add New Plugin > Upload Plugin.
 2. Activate Opace AI Hub.
 3. Open Opace AI Hub > Settings.
 4. Enter a key for at least one provider, or on WordPress 7.0+ configure it under Settings > Connectors.
@@ -180,7 +182,7 @@ No. Obtain a key directly from OpenAI, Anthropic or Google. The provider charges
 
 = Does Opace AI Hub generate content by itself? =
 
-No. It manages provider connections, models, prompts and usage data. Install a compatible plugin such as AI-Scribe to generate content.
+No. It manages provider connections, models, prompts and usage data. Install a compatible plugin such as AI Scribe to generate content.
 
 = How does the WordPress core AI Client integration work? =
 
@@ -220,12 +222,12 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 2. Dashboard - review provider status, usage totals and the main Opace AI Hub tools.
 3. Prompt Library - group, import, export and run reusable text or image prompts.
 4. Statistics - inspect requests, tokens, errors and estimated costs by provider, tool and model.
-5. Add-ons - see AI-Scribe status and the labelled roadmap for AI-Imagen, AI-Stats and AI-Pulse.
+5. Add-ons - see AI Scribe status and the labelled roadmap for AI-Imagen, AI-Stats and AI-Pulse.
 
 == Opace and related links ==
 
-* **[AI-Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
-* **[AI-Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
+* **[AI Scribe on WordPress.org](https://en-gb.wordpress.org/plugins/ai-scribe-the-chatgpt-powered-seo-content-creation-wizard/)**
+* **[AI Scribe on GitHub](https://github.com/OpaceDigitalAgency/ai-scribe-chat-gpt-content-creator)**
 * **[Opace AI Hub on GitHub](https://github.com/OpaceDigitalAgency/opace-ai-prompt-library-api-hub-wordpress-plugin)**
 * [Opace Digital Agency](https://opace.agency/)
 * [Web design and development](https://opace.agency/services/web-design/)
@@ -233,6 +235,12 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 * [AI SEO services](https://opace.agency/services/ai-seo/)
 
 == Changelog ==
+
+= 1.0.17 =
+
+* Corrected the installation guidance now that Opace AI Hub is publicly available on WordPress.org.
+* Added the canonical Opace AI Hub product page and standardised the AI Scribe product name in public documentation.
+* Added a purpose-made 1280 × 640 GitHub social preview.
 
 = 1.0.16 =
 
@@ -246,21 +254,21 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 
 = 1.0.14 =
 
-* Documented the paired AI-Scribe 3.2.36 install and upgrade compatibility boundary.
+* Documented the paired AI Scribe 3.2.36 install and upgrade compatibility boundary.
 * Made Hub release ZIPs reproducible so the reviewed source always rebuilds to the same hash.
 * Rechecked the complete readme for unwanted forced line breaks and retained the prominent companion and source links.
 
 = 1.0.13 =
 
-* Split AI-Scribe installation and activation into two explicit actions in the same Add-ons card.
+* Split AI Scribe installation and activation into two explicit actions in the same Add-ons card.
 * Kept installation progress, success and errors inside the card with no unrelated admin notice.
 * Improved WordPress.org paragraph rendering, companion links, focused tags and human-first search copy.
 
 = 1.0.12 =
 
-* Added one consent-led action that installs and activates AI-Scribe from WordPress.org.
-* Added state-aware Activate and Open AI-Scribe actions for existing installations.
-* Kept installation progress and errors inside the AI-Scribe add-on card.
+* Added one consent-led action that installs and activates AI Scribe from WordPress.org.
+* Added state-aware Activate and Open AI Scribe actions for existing installations.
+* Kept installation progress and errors inside the AI Scribe add-on card.
 * Corrected Dashicon alignment across Add-ons, Settings and Prompt Library buttons.
 
 = 1.0.11 =
@@ -288,7 +296,7 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 
 * Removed the unsupported `Tested up to` field from the main PHP plugin header following final WordPress.org review guidance; compatibility remains declared in readme.txt.
 * Prepared the approved permanent slug and listing assets for the first WordPress.org SVN release.
-* Added a Leave a Review link to the plugin row on the main Plugins page, matching AI-Scribe.
+* Added a Leave a Review link to the plugin row on the main Plugins page, matching AI Scribe.
 
 = 1.0.7 =
 
@@ -306,7 +314,7 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 
 * Classified the complete live provider inventory by capability for current and future add-ons.
 * Kept text selectors focused on prose models without removing image, audio, video, embedding or specialist models from the Hub API.
-* Recorded Gemini's supported generation methods and applied one prose-model rule to Hub defaults and AI-Scribe's text picker.
+* Recorded Gemini's supported generation methods and applied one prose-model rule to Hub defaults and AI Scribe's text picker.
 
 = 1.0.4 =
 
@@ -342,6 +350,10 @@ https://www.youtube.com/watch?v=nn3tV6UqJT4
 
 == Upgrade Notice ==
 
+= 1.0.17 =
+
+Corrects public installation guidance and adds the canonical Opace AI Hub product page.
+
 = 1.0.16 =
 
 Clarifies whether each saved provider key has passed an explicit test, failed one, or has not yet been tested.
@@ -352,15 +364,15 @@ Adds a consistent More from Opace card to every Hub admin screen without changin
 
 = 1.0.14 =
 
-Pairs with AI-Scribe 3.2.36's corrected legacy migration, historical-Hub updating and multisite setup flow.
+Pairs with AI Scribe 3.2.36's corrected legacy migration, historical-Hub updating and multisite setup flow.
 
 = 1.0.13 =
 
-Install AI-Scribe from the Hub Add-ons card, then activate it with a second explicit administrator action.
+Install AI Scribe from the Hub Add-ons card, then activate it with a second explicit administrator action.
 
 = 1.0.12 =
 
-Install and activate AI-Scribe directly from the Hub Add-ons screen with one explicit action.
+Install and activate AI Scribe directly from the Hub Add-ons screen with one explicit action.
 
 = 1.0.11 =
 

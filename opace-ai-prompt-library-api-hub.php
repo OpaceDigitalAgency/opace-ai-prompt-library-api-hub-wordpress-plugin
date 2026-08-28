@@ -3,7 +3,7 @@
  * Plugin Name: Opace AI Prompt Library & API Integration Hub for OpenAI, Claude & Gemini
  * Plugin URI: https://opace.agency/services/web-design/wordpress-development/
  * Description: Connect WordPress plugins to OpenAI, Anthropic Claude and Google Gemini with shared credentials, live models, prompts and usage records.
- * Version: 1.0.16
+ * Version: 1.0.17
  * Author: Opace Digital Agency
  * Author URI: https://opace.agency
  * License: GPLv2 or later
@@ -15,7 +15,7 @@
  * Tags: ai, openai, claude, gemini, api, integration, artificial intelligence
  *
  * @package AI_Core
- * @version 1.0.16
+ * @version 1.0.17
  */
 
 // Prevent direct access
@@ -27,7 +27,7 @@ if (!defined('ABSPATH')) {
 // already be loaded when Opace AI Hub is activated, which otherwise emits a
 // "Constant already defined" warning immediately before the redeclare fatal.
 if (!defined('AI_CORE_VERSION')) {
-    define('AI_CORE_VERSION', '1.0.16');
+    define('AI_CORE_VERSION', '1.0.17');
 }
 if (!defined('AI_CORE_PLUGIN_FILE')) {
     define('AI_CORE_PLUGIN_FILE', __FILE__);

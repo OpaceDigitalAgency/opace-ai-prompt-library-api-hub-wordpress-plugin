@@ -1,5 +1,11 @@
 # Opace AI Hub changelog
 
+## 1.0.17 — 28 August 2026
+
+- correct the installation guidance now that Opace AI Hub is publicly available on WordPress.org
+- add the canonical Opace AI Hub product page and standardise the AI Scribe product name in public documentation
+- add a purpose-made 1280 × 640 GitHub social preview
+
 ## 1.0.16 — 27 August 2026
 
 - show every stored Hub credential as saved and validated, saved but invalid, or saved and not yet tested
